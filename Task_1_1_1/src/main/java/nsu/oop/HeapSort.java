@@ -2,55 +2,43 @@ package nsu.oop;
 
 public class HeapSort {
 
-    private final int[] heap;
-    private final int k;
-
-    public HeapSort(int n) {
-        this.heap = new int[n];
-        k = n;
+    private void swap (int[] arr, int n, int m) {
+        arr[n] += arr[m];
+        arr[m] = arr[n] - arr[m];
+        arr[n] -= arr[m];
     }
 
-    private void swap(int n, int m) {
-        heap[n] += heap[m];
-        heap[m] = heap[n] - heap[m];
-        heap[n] -= heap[m];
-    }
-
-    private void siftUp(int k) {
-        int k0 = (k - 1) / 2;
-        if (k == 0 || heap[(k0)] < heap[k] ) {
+    private void findMaxElem (int[] arr, int arrLen, int i) {
+        int max = i;
+        int l = 2 * i + 1;
+        int r = 2 * i + 2;
+        if ( l >= arrLen) {
             return;
         }
-        swap(k, k0);
-        siftUp(k0);
-    }
-
-    private void siftDown(int k, int x) {
-        if (2 * x + 1 > k) {
-            return;
+        if (arr[l] > arr[max]) {
+            max = l;
         }
-
-        int x1 = 2 * x + 2;
-        if ((x1 > k) || (heap[x1 - 1] < heap[x1])) {
-            x1--;
+        if (r < arrLen && arr[r] > arr[max]) {
+            max = r;
         }
-
-        if (heap[x] > heap[x1]) {
-            swap(x, x1);
+        if (max != i) {
+            swap(arr, i, max);
+            findMaxElem(arr, arrLen, max);
         }
-
-        siftDown(k, x1);
     }
 
     public void sort (int[] arr) {
-        for (int i = 0; i < k; i++) {
-            heap[i] = arr[i];
-            siftUp(i);
+        if (arr == null) {
+            return;
         }
-        for (int i = 0; i < k; i++) {
-            arr[i] = heap[0];
-            heap[0] = heap[k - 1 - i];
-            siftDown(k - 2 - i, 0);
+        int arrLen = arr.length;
+        for (int i = arrLen / 2 - 1; i >= 0; i--) {
+            findMaxElem(arr, arrLen, i);
+        }
+        for (int i = arrLen - 1; i > 0; i--) {
+            swap(arr, 0, i);
+            findMaxElem(arr, i, 0);
         }
     }
+
 }
