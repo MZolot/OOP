@@ -2,13 +2,13 @@ package nsu.oop;
 
 public class HeapSort {
 
-    private void swap (int[] arr, int n, int m) {
+    private void swap(int[] arr, int n, int m) {
         arr[n] += arr[m];
         arr[m] = arr[n] - arr[m];
         arr[n] -= arr[m];
     }
 
-    private void findMaxElem (int[] arr, int arrLen, int i) {
+    private void findMaxElem(int[] arr, int arrLen, int i) {
         int max = i;
         int l = 2 * i + 1;
         int r = 2 * i + 2;
@@ -27,9 +27,13 @@ public class HeapSort {
         }
     }
 
-    public void sort (int[] arr) {
+    /**
+     * Sorts array using heap sort
+     * @param arr array to be sorted
+     */
+    public void sort(int[] arr) {
         if (arr == null) {
-            return;
+            throw new IllegalArgumentException("Null instead of array");
         }
         int arrLen = arr.length;
         for (int i = arrLen / 2 - 1; i >= 0; i--) {
@@ -40,5 +44,4 @@ public class HeapSort {
             findMaxElem(arr, i, 0);
         }
     }
-
 }
