@@ -38,55 +38,61 @@ public class SubstringSearch {
         return zFunction(subStr.length(), strForZ);
     }
 
-    /** Finds all entries of the substring in file
+
+    /**
+     * Finds all entries of the substring in file
+     *
      * @param fileName name of the file to search within
-     * @param subStr substring that is searched for
+     * @param subStr   substring that is searched for
      * @return list of indexes of each substring entry
      */
-    public ArrayList<Integer> Search(String fileName, String subStr) {
+    public ArrayList<Integer> search(String fileName, String subStr) throws IOException {
         int subLen = subStr.length();
-        ArrayList<Integer>  resList = new ArrayList<>();
+        if (subLen <= 0) {
+            throw new IllegalArgumentException("Can not work with empty substring.");
+        }
 
-        try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
-            int bufferSize = 30;
-            char[] charPartBig = new char[subLen * bufferSize];
-            char[] charPart = new char[subLen - 1];
-            String strPartBig;
-            String strPart;
-            reader.mark((subLen * bufferSize));
-            if (reader.read(charPartBig) == -1) {
-                strPartBig = String.valueOf(charPartBig);
-                return zSearch(subStr, strPartBig);
+        ArrayList<Integer> resList = new ArrayList<>();
+
+        BufferedReader reader = new BufferedReader(new FileReader(fileName));
+        int bufferSize = 15;
+        char[] charPartBig = new char[subLen * bufferSize];
+        char[] charPart = new char[subLen - 1];
+        String strPartBig;
+        String strPart;
+        reader.mark((subLen * bufferSize));
+        if (reader.read(charPartBig) == -1) {
+            if (charPartBig[0] == '\0') {
+                return resList;
             }
-            String mainStr;
-            ArrayList<Integer>  resPart;
-            int i = 0;
-            int x;
+            strPartBig = String.valueOf(charPartBig);
+            return zSearch(subStr, strPartBig);
+        }
+        String mainStr;
+        ArrayList<Integer> resPart;
+        int i = 0;
+        int x;
+        reader.reset();
+        reader.mark(subLen * bufferSize);
+        while (reader.read(charPartBig) != -1) {
+            strPartBig = String.valueOf(charPartBig);
+            reader.mark(subLen);
+            x = reader.read(charPart);
+            strPart = String.valueOf(charPart);
+            mainStr = String.join("", strPartBig, strPart);
+            resPart = zSearch(subStr, mainStr);
+            for (int resElem : resPart) {
+                resList.add(resElem + (subLen * bufferSize * i));
+            }
+            if (x == -1) {
+                break;
+            }
+            i++;
+            Arrays.fill(charPartBig, '\r');
             reader.reset();
             reader.mark(subLen * bufferSize);
-            while (reader.read(charPartBig) != -1) {
-                strPartBig = String.valueOf(charPartBig);
-                reader.mark(subLen);
-                x = reader.read(charPart);
-                strPart =  String.valueOf(charPart);
-                mainStr = String.join("", strPartBig, strPart);
-                resPart = zSearch(subStr, mainStr);
-                for (int resElem : resPart) {
-                    resList.add(resElem + (subLen * bufferSize * i));
-                }
-                if (x == -1) {
-                    break;
-                }
-                i++;
-                Arrays.fill(charPartBig, '\r');
-                reader.reset();
-                reader.mark(subLen * bufferSize);
-            }
         }
 
-        catch (IOException e) {
-            e.printStackTrace();
-        }
 
         return resList;
     }
