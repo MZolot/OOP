@@ -1,118 +1,76 @@
-import java.util.ArrayList;
-import java.util.Comparator;
+import java.util.*;
 
 public class RecordBook {
 
-    private class SubjectInfo {
-        public final String name;
-        public int grade;
-        public final int semester;
-
-        public SubjectInfo(String subjName, int subjSemester) {
-            name = subjName;
-            semester = subjSemester;
-        }
+    record SubjectInfo(String name, int semester) {
     }
 
-    private int gradesSum;
-    private int gradedNum;
-    public int qualificationGrade;
-    private final ArrayList<SubjectInfo> allInfo;
+    private int qualificationGrade;
+    private final Map<SubjectInfo, Integer> allInfo;
+    private final Map<String, Integer> diplomaApplication;
+    private final int[] stipend;
+
 
     public RecordBook() {
-        allInfo = new ArrayList<>();
+        allInfo = new HashMap<>();
+        diplomaApplication = new HashMap<>();
+        stipend = new int[20];
+        Arrays.fill(stipend, -1);
     }
 
     public void addSubject(String subjName, int subjSemester) {
-        SubjectInfo newSubj = new SubjectInfo(subjName, subjSemester);
-        allInfo.add(newSubj);
+        allInfo.put(new SubjectInfo(subjName, subjSemester), 0);
     }
 
     public void addSubjectsForSemester(int semester, String[] subjects) {
-        if(subjects == null || subjects.length == 0) {
+        if (subjects == null || subjects.length == 0) {
             throw new IllegalArgumentException("Subjects list is empty/null.");
         }
         for (String subject : subjects) {
-            SubjectInfo newSubj = new SubjectInfo(subject, semester);
-            allInfo.add(newSubj);
+            addSubject(subject, semester);
         }
     }
 
     public void grade(String subjName, int subjSemester, int grade) {
-        for (int i = allInfo.size() - 1; i >= 0; i--) {
-            if (allInfo.get(i).name.equals(subjName)) {
-                if (allInfo.get(i).semester == subjSemester) {
-                    if (allInfo.get(i).grade != 0) {
-                        gradesSum -= allInfo.get(i).grade;
-                        gradedNum--;
-                    }
-                    allInfo.get(i).grade = grade;
-                    gradesSum += allInfo.get(i).grade;
-                    gradedNum++;
-                    return;
-                }
-            }
+        allInfo.put(new SubjectInfo(subjName, subjSemester), grade);
+        diplomaApplication.put(subjName, grade);
+        if (stipend[subjSemester] == -1) {
+            stipend[subjSemester] = 1;
         }
-        throw new IllegalArgumentException("Trying to grade non-existent subject");
+        if (grade != 5) {
+            stipend[subjSemester] = 0;
+        }
     }
 
-    public Boolean stipend(int semester) {
-        allInfo.sort(Comparator.comparing(this::getName));
-        allInfo.sort(Comparator.comparing(this::getSemester));
-        int i = 0;
-        while (i < allInfo.size() && allInfo.get(i).semester != semester) {
-            i++;
-        }
-        if (i >= allInfo.size()) {
-            throw new IllegalArgumentException("No information about this semester");
-        }
-        while (i < allInfo.size() && allInfo.get(i).semester == semester) {
-            if (allInfo.get(i).grade != 5) {
-                return false;
-            }
-            i++;
-        }
-        return true;
+    public float averageGrade() {
+        Collection<Integer> grades = allInfo.values();
+        Integer sum = grades.stream().reduce(0, Integer::sum);
+        long length = grades.stream().filter(a -> a > 0).count();
+        return (float) sum / length;
     }
 
-    public Boolean redDiploma() {
-        allInfo.sort(Comparator.comparing(this::getSemester));
-        allInfo.sort(Comparator.comparing(this::getName));
-        int lastGradeAvg = 0;
-        if (allInfo.get(allInfo.size() - 1).grade == 3) {
-            return false;
+    public void setQualificationGrade(int grade) {
+        qualificationGrade = grade;
+    }
+
+    public int getQualificationGrade() {
+        return qualificationGrade;
+    }
+
+    public boolean isRedDiploma() {
+        Collection<Integer> grades = allInfo.values();
+        Collection<Integer> applicationGrades = diplomaApplication.values();
+        long goodGradesSum = applicationGrades.stream().reduce(0, Integer::sum);
+        return grades.stream().allMatch(a -> a > 3)
+                && (qualificationGrade == 5)
+                && ((float) goodGradesSum / diplomaApplication.size() >= 4.75);
+    }
+
+    public boolean isStipend(int semester) {
+        if (stipend[semester] == -1) {
+            throw new IllegalArgumentException("This semester wasn't graded yet");
         }
-        for (int i = allInfo.size() - 2; i >= 0; i--) {
-            if (allInfo.get(i).grade == 3) {
-                return false;
-            }
-            if (!allInfo.get(i).name.equals(allInfo.get(i+1).name)) {
-                lastGradeAvg += allInfo.get(i).grade;
-            }
-        }
-        return (qualificationGrade == 5 && lastGradeAvg >= 4.75);
+        return stipend[semester] == 1;
     }
-
-    public void printAll() {
-        System.out.println(allInfo.size());
-        for (SubjectInfo allSubject : allInfo) {
-            System.out.printf("%s, %d: %d\n", allSubject.name,
-                    allSubject.semester, allSubject.grade);
-        }
-        System.out.println();
-    }
-
-    private int getSemester(SubjectInfo subj) {
-        return subj.semester;
-    }
-
-    private String getName(SubjectInfo subj) {
-        return subj.name;
-    }
-
-    public float AverageGrade() {
-        return (float)gradesSum / gradedNum;
-    }
-
 
 }
