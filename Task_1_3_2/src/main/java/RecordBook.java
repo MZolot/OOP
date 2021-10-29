@@ -8,14 +8,13 @@ public class RecordBook {
     private int qualificationGrade;
     private final Map<SubjectInfo, Integer> allInfo;
     private final Map<String, Integer> diplomaApplication;
-    private final int[] stipend;
+    private final Boolean[] stipend;
 
 
     public RecordBook() {
         allInfo = new HashMap<>();
         diplomaApplication = new HashMap<>();
-        stipend = new int[20];
-        Arrays.fill(stipend, -1);
+        stipend = new Boolean[20];
     }
 
     public void addSubject(String subjName, int subjSemester) {
@@ -34,11 +33,11 @@ public class RecordBook {
     public void grade(String subjName, int subjSemester, int grade) {
         allInfo.put(new SubjectInfo(subjName, subjSemester), grade);
         diplomaApplication.put(subjName, grade);
-        if (stipend[subjSemester] == -1) {
-            stipend[subjSemester] = 1;
+        if (stipend[subjSemester] == null) {
+            stipend[subjSemester] = true;
         }
         if (grade != 5) {
-            stipend[subjSemester] = 0;
+            stipend[subjSemester] = false;
         }
     }
 
@@ -67,10 +66,10 @@ public class RecordBook {
     }
 
     public boolean isStipend(int semester) {
-        if (stipend[semester] == -1) {
+        if (stipend[semester] == null) {
             throw new IllegalArgumentException("This semester wasn't graded yet");
         }
-        return stipend[semester] == 1;
+        return stipend[semester];
     }
 
 }
