@@ -6,9 +6,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
 class CalculatorTest {
-
     @ParameterizedTest
-    @CsvSource(value = {"/ - * + 1 2 3 4 5=1", "sqrt 4=2", "pow 2 10=1024", "log cos 0=0", "sin + - 1 2 1=0"},
+    @CsvSource(value = {"/ - * + 1 2 3 4 5=1", "sqrt 4=2", "pow 2 10=1024", "log cos 0=0", "sin + - 1 2 1=0", "- 5 * 6 7=-37"},
             delimiter = '=')
     void testSubstringSearch(String expression, String correctRes) {
         Scanner scanner = new Scanner(expression);
@@ -21,7 +20,7 @@ class CalculatorTest {
     void testNotEnoughArguments() {
         Scanner scanner = new Scanner("+ 1");
         Calculator calculator = new Calculator();
-        Assertions.assertThrows(IndexOutOfBoundsException.class, () -> calculator.calculate(scanner));
+        Assertions.assertThrows(IllegalArgumentException.class, () -> calculator.calculate(scanner));
     }
 
     @Test

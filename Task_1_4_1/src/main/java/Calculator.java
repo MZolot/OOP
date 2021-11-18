@@ -1,64 +1,44 @@
-import java.util.Arrays;
 import java.util.Scanner;
-import java.util.regex.Pattern;
 
 public class Calculator {
 
-    private final String[] oneArgOperators = {"sqrt", "sin", "cos", "log"};
-    private final String[] twoArgOperators = {"+", "-", "*", "/", "pow"};
-
-    private int parser(String[] tokens) {
-        String token;
-        int firstArg = -1;
-        for (int i = 0; i < tokens.length; i++) {
-            token = tokens[i];
-            if (Arrays.stream(oneArgOperators).noneMatch(token::equals) &&
-                    Arrays.stream(twoArgOperators).noneMatch(token::equals) &&
-                    !Pattern.matches("\\d+?[.]?\\d*", token)) {
-                throw new IllegalArgumentException("Incorrect input");
-            }
-            if (Pattern.matches("\\d+?[.]?\\d*", token) && firstArg == -1) {
-                firstArg = i;
-            }
+     public static double getArg(Scanner scanner) {
+        if (!scanner.hasNext()) {
+            throw new IllegalArgumentException("Not enough arguments");
         }
-        if (firstArg == -1) {
-            throw new IllegalArgumentException("Incorrect input: no arguments");
+        if (scanner.hasNextDouble()) {
+            return scanner.nextDouble();
+        } else {
+            Operations operation = operationsFactory(scanner.next());
+            return operation.calculate(scanner);
         }
-        return firstArg;
     }
 
     public double calculate(Scanner scanner) {
-        String expression = scanner.nextLine();
-        String[] tokens = expression.split(" ");
-        int firstArg = parser(tokens);
-        int currentArg = firstArg + 1;
-        double res = Double.parseDouble(tokens[firstArg]);
-        for (int i = firstArg - 1; i >= 0; i--) {
-            if (Arrays.asList(oneArgOperators).contains(tokens[i])) {
-                res = operation(tokens[i], res, 0);
-            } else {
-                if (currentArg >= tokens.length) {
-                    throw new IndexOutOfBoundsException("Less arguments than operations require");
-                }
-                res = operation(tokens[i], res, Double.parseDouble(tokens[currentArg++]));
-            }
+        if (!scanner.hasNext()) {
+            throw new IllegalArgumentException("Empty input");
         }
-        return res;
+        if (scanner.hasNextDouble()) {
+            throw new IllegalArgumentException("Expression needs to start with an operation");
+        }
+        Operations operation0 = operationsFactory(scanner.next());
+        return operation0.calculate(scanner);
     }
 
-    private double operation(String operationName, double a, double b) {
+    public static Operations operationsFactory(String operationName) {
         return switch (operationName) {
-            case ("sin") -> Math.sin(a);
-            case ("cos") -> Math.cos(a);
-            case ("sqrt") -> Math.sqrt(a);
-            case ("log") -> Math.log(a);
-            case ("+") -> a + b;
-            case ("-") -> a - b;
-            case ("*") -> a * b;
-            case ("/") -> a / b;
-            case ("pow") -> Math.pow(a, b);
-            default -> 0;
+            case ("sin") -> new OpSin();
+            case ("cos") -> new OpCos();
+            case ("sqrt") -> new OpSqrt();
+            case ("log") -> new OpLog();
+            case ("+") -> new OpSum();
+            case ("-") -> new OpSub();
+            case ("*") -> new OpMult();
+            case ("/") -> new OpDiv();
+            case ("pow") -> new OpPow();
+            default -> throw new IllegalArgumentException("Nonexistent operation");
         };
     }
 
 }
+
