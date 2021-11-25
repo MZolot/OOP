@@ -1,5 +1,7 @@
 import java.io.*;
 import java.lang.reflect.Type;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 import com.google.gson.*;
@@ -29,8 +31,8 @@ public class Notebook {
     private final Gson gson;
     private List<Note> allNotes;
 
-    public Notebook() throws IOException {
-        file = new File("notes.json");
+    public Notebook(File file) throws IOException {
+        this.file = file;
         Reader reader = new FileReader(file);
         gson = new GsonBuilder().setPrettyPrinting().create();
         Type type = new TypeToken<ArrayList<Note>>() {
@@ -41,7 +43,23 @@ public class Notebook {
         }
     }
 
-    public void addNote(String name, String content) throws IOException {
+    public void executeNotebook(String[] args) throws ParseException, IOException {
+        if (args == null || args.length == 0) {
+            throw new IllegalArgumentException("No arguments");
+        }
+        switch (args[0]) {
+            case ("-add") -> addNote(args);
+            case ("-rm") -> removeNote(args);
+            case ("-show") -> printAllNotes(args);
+        }
+    }
+
+    public void addNote(String[] args) throws IOException {
+        if (args.length < 3) {
+            throw new IllegalArgumentException("Not enough arguments for creating a note");
+        }
+        String name = args[1];
+        String content = args[2];
         Note newNote = new Note(name, content);
         allNotes.add(newNote);
         Writer writer = new FileWriter(file, false);
@@ -50,7 +68,11 @@ public class Notebook {
         writer.close();
     }
 
-    public void removeNote(String name) throws IOException {
+    public void removeNote(String[] args) throws IOException {
+        if (args.length == 1) {
+            throw new IllegalArgumentException("Not enough arguments for deleting a note");
+        }
+        String name = args[1];
         for (int i = 0; i < allNotes.size(); i++) {
             if (name.equals(allNotes.get(i).name)) {
                 allNotes.remove(i);
@@ -61,10 +83,14 @@ public class Notebook {
                 return;
             }
         }
-        throw new IllegalArgumentException("No notes with this name");
+        System.out.printf("No notes named \"%s\". Nothing was removed.\n", name);
     }
 
-    public void printAllNotes() {
+    public void printAllNotes(String[] args) throws ParseException {
+        if (args.length > 1) {
+            printFilteredNotes(args);
+            return;
+        }
         System.out.println("================");
         for (Note note : allNotes) {
             note.printNote();
@@ -72,8 +98,16 @@ public class Notebook {
         }
     }
 
+    private Calendar parseCalendar(String str) throws ParseException {
+        SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy k:mm");
+        Date date = sdf.parse(str);
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        return calendar;
+    }
+
     private boolean containsKeyWords(String noteName, String[] keyWords) {
-        if (keyWords == null && keyWords.length == 0) {
+        if (keyWords == null || keyWords.length == 0) {
             return true;
         }
         String lowerCaseNoteName = noteName.toLowerCase();
@@ -85,7 +119,10 @@ public class Notebook {
         return false;
     }
 
-    public void printFilteredNotes(Calendar from, Calendar to, String[] keyWords) {
+    public void printFilteredNotes(String[] args) throws ParseException {
+        Calendar from = parseCalendar(args[1]);
+        Calendar to = parseCalendar(args[2]);
+        String[] keyWords = Arrays.copyOfRange(args, 3, args.length);
         System.out.println("================");
         for (Note note : allNotes) {
             if (note.addingTime.after(from) && note.addingTime.before(to) && containsKeyWords(note.name, keyWords)) {
