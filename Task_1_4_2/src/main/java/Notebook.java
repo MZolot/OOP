@@ -3,6 +3,7 @@ import java.lang.reflect.Type;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
@@ -123,14 +124,11 @@ public class Notebook {
         Calendar from = parseCalendar(args[1]);
         Calendar to = parseCalendar(args[2]);
         String[] keyWords = Arrays.copyOfRange(args, 3, args.length);
+        List<Note> goodNotes = allNotes.stream().filter(a -> containsKeyWords(a.name, keyWords)).collect(Collectors.toList());
         System.out.println("================");
-        for (Note note : allNotes) {
-            if (note.addingTime.after(from) && note.addingTime.before(to) && containsKeyWords(note.name, keyWords)) {
-                note.printNote();
-                System.out.println("================");
-            } else if (note.addingTime.after(to)) {
-                return;
-            }
+        for (Note note : goodNotes) {
+            note.printNote();
+            System.out.println("================");
         }
     }
 
