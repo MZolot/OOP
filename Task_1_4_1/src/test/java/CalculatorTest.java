@@ -1,5 +1,6 @@
 import java.util.Scanner;
 
+import calculator.Calculator;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
