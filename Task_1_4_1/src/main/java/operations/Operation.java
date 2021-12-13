@@ -3,7 +3,7 @@ package operations;
 import java.util.Scanner;
 import calculator.*;
 
-public interface Operations {
+public interface Operation {
     double calculate(Scanner scanner);
 
     static double getArg(Scanner scanner) {
@@ -13,7 +13,7 @@ public interface Operations {
         if (scanner.hasNextDouble()) {
             return scanner.nextDouble();
         } else {
-            Operations operation = Calculator.getOperation(scanner.next());
+            Operation operation = Calculator.getOperation(scanner.next());
             return operation.calculate(scanner);
         }
     }
