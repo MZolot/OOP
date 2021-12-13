@@ -2,10 +2,10 @@ package operations;
 
 import java.util.Scanner;
 
-public class OpSum implements Operations {
+public class OpSum implements Operation {
     public double calculate(Scanner scan){
-        double a = Operations.getArg(scan);
-        double b = Operations.getArg(scan);
+        double a = Operation.getArg(scan);
+        double b = Operation.getArg(scan);
         return a + b;
     }
 }

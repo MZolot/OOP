@@ -8,7 +8,7 @@ import java.util.Map;
 
 public class Calculator {
 
-    private static Map<String, Operations> implementedOperations;
+    private static Map<String, Operation> implementedOperations;
 
     public Calculator() {
         implementedOperations = new HashMap<>(){
@@ -25,7 +25,7 @@ public class Calculator {
             }};
     }
 
-    public void addOperations(Map<String, Operations> extraOperations) {
+    public void addOperations(Map<String, Operation> extraOperations) {
         implementedOperations.putAll(extraOperations);
     }
 
@@ -37,12 +37,12 @@ public class Calculator {
         if (scanner.hasNextDouble()) {
             throw new IllegalArgumentException("Expression needs to start with an operation");
         }
-        Operations operation0 = getOperation(scanner.next());
+        Operation operation0 = getOperation(scanner.next());
         return operation0.calculate(scanner);
     }
 
-    public static Operations getOperation(String operationName) {
-        Operations operation = implementedOperations.get(operationName);
+    public static Operation getOperation(String operationName) {
+        Operation operation = implementedOperations.get(operationName);
         if (operation==null) {
             throw new IllegalArgumentException("Non-existent operation");
         }
