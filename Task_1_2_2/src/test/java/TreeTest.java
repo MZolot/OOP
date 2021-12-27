@@ -138,4 +138,16 @@ class TreeTest {
         Integer[] array = {2, 4};
         Assertions.assertArrayEquals(array, treeArray);
     }
+
+    @Test
+    public void testStreamAPIFromExample() {
+        Tree<String> tree = new Tree<>();
+        tree.add("A");
+        tree.add("B");
+        tree.add("AB");
+        tree.add("BB");
+        Object[] treeArray = tree.stream().filter(a -> a.contains("B")).toArray();
+        String[] array = {"B", "AB", "BB"};
+        Assertions.assertArrayEquals(array, treeArray);
+    }
 }

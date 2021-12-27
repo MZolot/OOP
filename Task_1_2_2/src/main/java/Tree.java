@@ -1,5 +1,6 @@
 import java.lang.reflect.Array;
 import java.util.*;
+import java.util.function.Consumer;
 
 public class Tree<E> implements Collection<E> {
 
@@ -242,5 +243,52 @@ public class Tree<E> implements Collection<E> {
         }
     }
 
+    public Spliterator<E> spliterator() {
+        return new breadthFirstSpliterator<>(this);
+    }
 
+    public static class breadthFirstSpliterator<E> implements Spliterator<E> {
+
+        private final List<Node<E>> queue;
+        private final Tree<E> tree;
+
+        public breadthFirstSpliterator(Tree<E> tree) {
+            queue = new ArrayList<>();
+            queue.add(tree.root);
+            this.tree = tree;
+        }
+
+        @Override
+        public boolean tryAdvance(Consumer<? super E> action) {
+            if (queue.isEmpty()) {
+                return false;
+            }
+            Node<E> nextNode = queue.get(0);
+            queue.addAll(nextNode.children);
+            queue.remove(0);
+            action.accept(nextNode.value);
+            return true;
+        }
+
+        @Override
+        public Spliterator<E> trySplit() {
+            Tree newTree = new Tree();
+            if (tree.treeSize < 2) {
+                return null;
+            }
+            newTree.root = tree.root.children.get(0);
+            tree.remove(tree.root.children.get(0));
+            return new breadthFirstSpliterator<>(newTree);
+        }
+
+        @Override
+        public long estimateSize() {
+            return tree.treeSize;
+        }
+
+        @Override
+        public int characteristics() {
+            return SIZED | CONCURRENT | DISTINCT;
+        }
+    }
 }
