@@ -129,6 +129,7 @@ public class Tree<E> implements Collection<E> {
             }
             newRoot.parent = null;
             root = newRoot;
+            this.treeSize--;
             return true;
         }
         breadthFirstIterator<E> iterator = new breadthFirstIterator<>(this.root);
