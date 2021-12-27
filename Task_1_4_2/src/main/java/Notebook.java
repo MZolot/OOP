@@ -1,5 +1,6 @@
 import java.io.*;
 import java.lang.reflect.Type;
+import java.rmi.NoSuchObjectException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -7,6 +8,8 @@ import java.util.stream.Collectors;
 
 import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
+
+import picocli.CommandLine;
 
 public class Notebook {
 
@@ -44,23 +47,7 @@ public class Notebook {
         }
     }
 
-    public void executeNotebook(String[] args) throws ParseException, IOException {
-        if (args == null || args.length == 0) {
-            throw new IllegalArgumentException("No arguments");
-        }
-        switch (args[0]) {
-            case ("-add") -> addNote(args);
-            case ("-rm") -> removeNote(args);
-            case ("-show") -> printAllNotes(args);
-        }
-    }
-
-    public void addNote(String[] args) throws IOException {
-        if (args.length < 3) {
-            throw new IllegalArgumentException("Not enough arguments for creating a note");
-        }
-        String name = args[1];
-        String content = args[2];
+    public void addNote(String name, String content) throws IOException {
         Note newNote = new Note(name, content);
         allNotes.add(newNote);
         Writer writer = new FileWriter(file, false);
@@ -69,13 +56,12 @@ public class Notebook {
         writer.close();
     }
 
-    public void removeNote(String[] args) throws IOException {
-        if (args.length == 1) {
-            throw new IllegalArgumentException("Not enough arguments for deleting a note");
+    public void removeNote(String name) throws IOException {
+        if (allNotes.size() == 0) {
+            throw new NoSuchObjectException("Trying to remove notes from empty notebook");
         }
-        String name = args[1];
         for (int i = 0; i < allNotes.size(); i++) {
-            if (name.equals(allNotes.get(i).name)) {
+            if (allNotes.get(i).name.equals(name)) {
                 allNotes.remove(i);
                 Writer writer = new FileWriter(file, false);
                 gson.toJson(allNotes, writer);
@@ -84,14 +70,24 @@ public class Notebook {
                 return;
             }
         }
-        System.out.printf("No notes named \"%s\". Nothing was removed.\n", name);
     }
 
-    public void printAllNotes(String[] args) throws ParseException {
-        if (args.length > 1) {
-            printFilteredNotes(args);
+    public void printNotes(String[] args) throws ParseException {
+        if (args == null || args.length == 0) {
+            this.printAllNotes();
             return;
         }
+        Calendar check = parseCalendar(args[0]);
+        if (check == null) {
+            this.printFilteredNotes(args);
+        } else {
+            SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy k:mm");
+            Date date = sdf.parse(args[1]);
+            this.printFilteredByDateNotes(args);
+        }
+    }
+
+    private void printAllNotes() {
         System.out.println("================");
         for (Note note : allNotes) {
             note.printNote();
@@ -102,6 +98,9 @@ public class Notebook {
     private Calendar parseCalendar(String str) throws ParseException {
         SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy k:mm");
         Date date = sdf.parse(str);
+        if (date == null) {
+            return null;
+        }
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);
         return calendar;
@@ -120,11 +119,27 @@ public class Notebook {
         return false;
     }
 
-    public void printFilteredNotes(String[] args) throws ParseException {
-        Calendar from = parseCalendar(args[1]);
-        Calendar to = parseCalendar(args[2]);
-        String[] keyWords = Arrays.copyOfRange(args, 3, args.length);
-        List<Note> goodNotes = allNotes.stream().filter(a -> containsKeyWords(a.name, keyWords)).collect(Collectors.toList());
+    private void printFilteredNotes(String[] args) {
+        String[] keyWords = Arrays.copyOfRange(args, 0, args.length);
+        List<Note> goodNotes = allNotes.stream()
+                .filter(a -> containsKeyWords(a.name, keyWords))
+                .collect(Collectors.toList());
+        System.out.println("================");
+        for (Note note : goodNotes) {
+            note.printNote();
+            System.out.println("================");
+        }
+    }
+
+    private void printFilteredByDateNotes(String[] args) throws ParseException {
+        Calendar from = parseCalendar(args[0]);
+        Calendar to = parseCalendar(args[1]);
+        String[] keyWords = Arrays.copyOfRange(args, 2, args.length);
+        List<Note> goodNotes = allNotes.stream()
+                .filter(a -> containsKeyWords(a.name, keyWords))
+                .filter(a -> a.addingTime.after(from))
+                .filter(a -> a.addingTime.before(to))
+                .collect(Collectors.toList());
         System.out.println("================");
         for (Note note : goodNotes) {
             note.printNote();
@@ -138,5 +153,22 @@ public class Notebook {
         gson.toJson(allNotes, writer);
         writer.flush();
         writer.close();
+    }
+
+    public List<String[]> getAttributesList() throws FileNotFoundException {
+        Reader reader = new FileReader(this.file);
+        Type type = new TypeToken<ArrayList<Note>>() {
+        }.getType();
+        List<Note> notes = gson.fromJson(reader, type);
+        List<String[]> list = new ArrayList<>();
+        for (Note n : notes) {
+            String[] entry = new String[] {n.name, n.content};
+            list.add(entry);
+        }
+        return list;
+    }
+
+    public static void main(String[] args) {
+        new CommandLine(new NotebookCommands()).execute(args);
     }
 }
