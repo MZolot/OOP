@@ -4,10 +4,10 @@ import java.util.function.Consumer;
 
 public class Tree<E> implements Collection<E> {
 
-    public static class Node<E> {
-        public E value;
-        public List<Node<E>> children;
-        public Node<E> parent;
+    private static class Node<E> {
+        private final E value;
+        private final List<Node<E>> children;
+        private Node<E> parent;
 
         private Node(E value, Node<E> parent) {
             this.value = value;
@@ -49,28 +49,52 @@ public class Tree<E> implements Collection<E> {
         this.treeSize = 0;
     }
 
+    /**
+     * @return Returns size of the tree
+     */
     public int size() {
         return treeSize;
     }
 
+    /**
+     * @return Returns true if the tree is empty
+     */
     public boolean isEmpty() {
         return this.root == null;
     }
 
+    /**
+     * Checks if the object is in the tree
+     * @param o - the object that is searched in the tree
+     * @return - returns true if the tree contains the element
+     */
     public boolean contains(Object o) {
         if (this.root == null) {
-            throw new NullPointerException("The tree is empty");
+            throw new IllegalStateException("The tree is empty");
         }
-        return Arrays.asList(this.toArray()).contains(o);
+        breadthFirstIterator<E> bfi = new breadthFirstIterator<>(this.root);
+        while (bfi.hasNext()) {
+            if (bfi.next().equals(o)) {
+                return true;
+            }
+        }
+        return false;
     }
 
+    /**
+     * Returns iterator that iterates tree using a breadth first algorithm
+     * @return Returns Breadth First iterator
+     */
     public Iterator<E> iterator() {
         return new breadthFirstIterator<>(this.root);
     }
 
+    /**
+     * @return Returns an array with values of all nodes
+     */
     public Object[] toArray() {
         if (root == null) {
-            throw new NullPointerException("The tree is empty");
+            throw new IllegalStateException("The tree is empty");
         }
         Object[] array = new Object[this.size()];
         Iterator<E> it = this.iterator();
@@ -81,12 +105,17 @@ public class Tree<E> implements Collection<E> {
         return array;
     }
 
+    /**
+     * @param a - the array where values are put
+     * @param <E> - type of the objects in the array and in the tree
+     * @return Returns an array with values of all nodes
+     */
     public <E> E[] toArray(E[] a) {
         if (root == null) {
-            throw new NullPointerException("The tree is empty");
+            throw new IllegalStateException("The tree is empty");
         }
         if (a == null) {
-            throw new NullPointerException("The specified array is null");
+            throw new IllegalStateException("The specified array is null");
         }
         if (a.length < this.treeSize) {
             a = (E[]) Array.newInstance(a.getClass(), this.treeSize);
@@ -99,12 +128,18 @@ public class Tree<E> implements Collection<E> {
         return a;
     }
 
+    /**
+     * Adds new node with value e to the tree
+     * @param e - value of the new node
+     * @return Returns true if new node was successfully added
+     */
     public boolean add(E e) {
         if (this.size() == 0) {
             root = new Node<>(e, null);
             this.treeSize = 1;
             return true;
         }
+
         breadthFirstIterator<E> iterator = new breadthFirstIterator<>(this.root);
         while (iterator().hasNext()) {
             Node<E> current = iterator.nextNode();
@@ -117,9 +152,14 @@ public class Tree<E> implements Collection<E> {
         return false;
     }
 
+    /**
+     * Removes node with first entry of the object from the tree
+     * @param o - value that is deleted
+     * @return Returns true if the object was successfully deleted
+     */
     public boolean remove(Object o) {
         if (this.root == null) {
-            throw new NullPointerException("The tree is empty");
+            throw new IllegalStateException("The tree is empty");
         }
         if (this.root.value.equals(o)) {
             Node<E> newRoot = root.children.get(0);
@@ -145,13 +185,23 @@ public class Tree<E> implements Collection<E> {
         return false;
     }
 
+    /**
+     * Checks if the tree contains all elements from the collection
+     * @param c the collection of objects that are searched in the tree
+     * @return - returns true if the tree contains all objects in the collection
+     */
     public boolean containsAll(Collection<?> c) {
         if (this.root == null) {
-            throw new NullPointerException("The tree is empty");
+            throw new IllegalStateException("The tree is empty");
         }
-        return Arrays.asList(this.toArray()).containsAll(c);
+        return c.stream().allMatch(this::contains);
     }
 
+    /**
+     * Adds all elements of the collection to the tree
+     * @param c - collection of elements to be added
+     * @return Returns true if all elements were added successfully
+     */
     public boolean addAll(Collection<? extends E> c) {
         boolean success = true;
         for (E e : c) {
@@ -160,9 +210,14 @@ public class Tree<E> implements Collection<E> {
         return success;
     }
 
+    /**
+     * Removes all elements of the collection from the tree
+     * @param c - collection of elements to be removed
+     * @return Returns true if all elements were removed successfully
+     */
     public boolean removeAll(Collection<?> c) {
         if (root == null) {
-            throw new NullPointerException("The tree is empty");
+            throw new IllegalStateException("The tree is empty");
         }
         if (this.treeSize < c.size()) {
             throw new IndexOutOfBoundsException("List for removing has more object than the tree");
@@ -174,13 +229,20 @@ public class Tree<E> implements Collection<E> {
         return success;
     }
 
+
+    /**
+     * Removes all elements that are not in the collection from the tree
+     * @param c - collection of elements to keep
+     * @return Returns true if all other elements were removed successfully
+     */
     public boolean retainAll(Collection<?> c) {
         if (this.root == null) {
-            throw new NullPointerException("The tree is empty");
+            throw new IllegalStateException("The tree is empty");
         }
-        Object[] treeArray = this.toArray();
         List<Object> elementsToDelete = new ArrayList<>();
-        for (Object o : treeArray) {
+        breadthFirstIterator<E> bfi = new breadthFirstIterator<>(this.root);
+        while (bfi.hasNext()) {
+            Object o = bfi.next();
             if (!c.contains(o)) {
                 elementsToDelete.add(o);
             }
@@ -188,17 +250,21 @@ public class Tree<E> implements Collection<E> {
         return removeAll(elementsToDelete);
     }
 
+    /**
+     * Clears the tree
+     * (makes tree empty)
+     */
     public void clear() {
         root = null;
         this.treeSize = 0;
     }
 
-    public static class breadthFirstIterator<E> implements Iterator<E> {
+    private static class breadthFirstIterator<E> implements Iterator<E> {
 
-        private final List<Node<E>> queue;
+        private final Deque<Tree.Node<E>> queue;
 
         public breadthFirstIterator(Node<E> root) {
-            queue = new ArrayList<>();
+            queue = new ArrayDeque<>();
             queue.add(root);
         }
 
@@ -207,21 +273,24 @@ public class Tree<E> implements Collection<E> {
         }
 
         public E next() {
-            Node<E> nextNode = queue.get(0);
+            Node<E> nextNode = queue.getFirst();
             queue.addAll(nextNode.children);
-            queue.remove(0);
+            queue.removeFirst();
             return nextNode.value;
         }
 
         public Node<E> nextNode() {
-            Node<E> nextNode = queue.get(0);
+            Node<E> nextNode = queue.getFirst();
             queue.addAll(nextNode.children);
-            queue.remove(0);
+            queue.removeFirst();
             return nextNode;
         }
 
     }
 
+    /**
+     * Prints values of all nodes
+     */
     public void printBreadthFirst() {
         Iterator<E> iterator = new breadthFirstIterator<>(this.root);
         while (iterator.hasNext()) {
@@ -229,6 +298,10 @@ public class Tree<E> implements Collection<E> {
         }
     }
 
+    /**
+     * Prints structure of the tree
+     * Prints value of a node and then values of all its children
+     */
     public void printStructure() {
         breadthFirstIterator<E> iterator = new breadthFirstIterator<>(this.root);
         while (iterator.hasNext()) {
@@ -243,17 +316,21 @@ public class Tree<E> implements Collection<E> {
         }
     }
 
+    /**
+     * Returns spliterator that uses a breadth first algorithm
+     * @return Returns Breadth First iterator
+     */
     public Spliterator<E> spliterator() {
         return new breadthFirstSpliterator<>(this);
     }
 
-    public static class breadthFirstSpliterator<E> implements Spliterator<E> {
+    private static class breadthFirstSpliterator<E> implements Spliterator<E> {
 
-        private final List<Node<E>> queue;
+        private final Deque<Node<E>> queue;
         private final Tree<E> tree;
 
         public breadthFirstSpliterator(Tree<E> tree) {
-            queue = new ArrayList<>();
+            queue = new ArrayDeque<>();
             queue.add(tree.root);
             this.tree = tree;
         }
@@ -263,9 +340,9 @@ public class Tree<E> implements Collection<E> {
             if (queue.isEmpty()) {
                 return false;
             }
-            Node<E> nextNode = queue.get(0);
+            Node<E> nextNode = queue.getFirst();
             queue.addAll(nextNode.children);
-            queue.remove(0);
+            queue.removeFirst();
             action.accept(nextNode.value);
             return true;
         }
