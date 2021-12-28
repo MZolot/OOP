@@ -9,8 +9,6 @@ import java.util.stream.Collectors;
 import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
 
-import picocli.CommandLine;
-
 public class Notebook {
 
     public static class Note {
@@ -168,7 +166,4 @@ public class Notebook {
         return list;
     }
 
-    public static void main(String[] args) {
-        new CommandLine(new NotebookCommands()).execute(args);
-    }
 }
