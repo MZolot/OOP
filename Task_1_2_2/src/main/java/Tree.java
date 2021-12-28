@@ -50,14 +50,14 @@ public class Tree<E> implements Collection<E> {
     }
 
     /**
-     * @return Returns size of the tree
+     * @return size of the tree
      */
     public int size() {
         return treeSize;
     }
 
     /**
-     * @return Returns true if the tree is empty
+     * @return true if the tree is empty
      */
     public boolean isEmpty() {
         return this.root == null;
@@ -83,14 +83,14 @@ public class Tree<E> implements Collection<E> {
 
     /**
      * Returns iterator that iterates tree using a breadth first algorithm
-     * @return Returns Breadth First iterator
+     * @return Breadth First iterator
      */
     public Iterator<E> iterator() {
         return new breadthFirstIterator<>(this.root);
     }
 
     /**
-     * @return Returns an array with values of all nodes
+     * @return an array with values of all nodes
      */
     public Object[] toArray() {
         if (root == null) {
@@ -108,7 +108,7 @@ public class Tree<E> implements Collection<E> {
     /**
      * @param a - the array where values are put
      * @param <E> - type of the objects in the array and in the tree
-     * @return Returns an array with values of all nodes
+     * @return an array with values of all nodes
      */
     public <E> E[] toArray(E[] a) {
         if (root == null) {
@@ -131,7 +131,7 @@ public class Tree<E> implements Collection<E> {
     /**
      * Adds new node with value e to the tree
      * @param e - value of the new node
-     * @return Returns true if new node was successfully added
+     * @return true if new node was successfully added
      */
     public boolean add(E e) {
         if (this.size() == 0) {
@@ -139,15 +139,17 @@ public class Tree<E> implements Collection<E> {
             this.treeSize = 1;
             return true;
         }
-
-        breadthFirstIterator<E> iterator = new breadthFirstIterator<>(this.root);
-        while (iterator().hasNext()) {
-            Node<E> current = iterator.nextNode();
+        Deque<Tree.Node<E>> queue = new ArrayDeque<>();
+        queue.add(this.root);
+        while (!queue.isEmpty()) {
+            Node<E> current = queue.getFirst();
+            queue.removeFirst();
             if (current.children.size() < 2) {
                 current.addChild(e);
                 this.treeSize++;
                 return true;
             }
+            queue.addAll(current.children);
         }
         return false;
     }
@@ -155,7 +157,7 @@ public class Tree<E> implements Collection<E> {
     /**
      * Removes node with first entry of the object from the tree
      * @param o - value that is deleted
-     * @return Returns true if the object was successfully deleted
+     * @return true if the object was successfully deleted
      */
     public boolean remove(Object o) {
         if (this.root == null) {
@@ -173,14 +175,18 @@ public class Tree<E> implements Collection<E> {
             this.treeSize--;
             return true;
         }
-        breadthFirstIterator<E> iterator = new breadthFirstIterator<>(this.root);
-        while (iterator().hasNext()) {
-            Node<E> current = iterator.nextNode();
+
+        Deque<Tree.Node<E>> queue = new ArrayDeque<>();
+        queue.add(this.root);
+        while (!queue.isEmpty()) {
+            Node<E> current = queue.getFirst();
+            queue.removeFirst();
             if (current.value.equals(o)) {
                 this.treeSize--;
                 current.parent.removeChild(current);
                 return true;
             }
+            queue.addAll(current.children);
         }
         return false;
     }
@@ -200,7 +206,7 @@ public class Tree<E> implements Collection<E> {
     /**
      * Adds all elements of the collection to the tree
      * @param c - collection of elements to be added
-     * @return Returns true if all elements were added successfully
+     * @return true if all elements were added successfully
      */
     public boolean addAll(Collection<? extends E> c) {
         boolean success = true;
@@ -213,7 +219,7 @@ public class Tree<E> implements Collection<E> {
     /**
      * Removes all elements of the collection from the tree
      * @param c - collection of elements to be removed
-     * @return Returns true if all elements were removed successfully
+     * @return true if all elements were removed successfully
      */
     public boolean removeAll(Collection<?> c) {
         if (root == null) {
@@ -233,7 +239,7 @@ public class Tree<E> implements Collection<E> {
     /**
      * Removes all elements that are not in the collection from the tree
      * @param c - collection of elements to keep
-     * @return Returns true if all other elements were removed successfully
+     * @return true if all other elements were removed successfully
      */
     public boolean retainAll(Collection<?> c) {
         if (this.root == null) {
@@ -318,7 +324,7 @@ public class Tree<E> implements Collection<E> {
 
     /**
      * Returns spliterator that uses a breadth first algorithm
-     * @return Returns Breadth First iterator
+     * @return Breadth First iterator
      */
     public Spliterator<E> spliterator() {
         return new breadthFirstSpliterator<>(this);
