@@ -1,7 +1,6 @@
 import java.io.File;
 import java.io.IOException;
 import java.rmi.NoSuchObjectException;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -60,13 +59,39 @@ class NotebookTest {
 
         String[] showArgs2 = {"-show", "25.10.2021 7:00", "01.01.2022 0:00", "nOTe"};
         new CommandLine(new NotebookCommands()).execute(showArgs2);
+    }
 
+    @Test
+    public void testForTwoNotebooks() throws IOException {
+        File file = new File("notes.json");
+        file.createNewFile();
+        Notebook notebook = new Notebook(file);
+        notebook.clearNotebook();
+
+        File file2 = new File("notes2.json");
+        file2.createNewFile();
+        Notebook notebook2 = new Notebook(file2);
+        notebook2.clearNotebook();
+
+        String[] addArgs1 = {"-add", "my first note", "this is my first note ever"};
+        new CommandLine(new NotebookCommands()).execute(addArgs1);
+
+        String[] addArgs2 = {"-add", "second note", "i write notes", "--f", "notes2.json"};
+        new CommandLine(new NotebookCommands()).execute(addArgs2);
+
+        String[] showArgs1 = {"-show"};
+        new CommandLine(new NotebookCommands()).execute(showArgs1);
+
+        String[] showArgs2 = {"-show", "--f", "notes2.json"};
+        new CommandLine(new NotebookCommands()).execute(showArgs2);
     }
 
     @Test
     public void removeFromEmptyNotebook() throws IOException {
         File file = new File("notes.json");
         file.createNewFile();
+        Notebook notebook = new Notebook(file);
+        notebook.clearNotebook();
         String[] removeArgs = {"-rm", "my first note"};
         Assertions.assertThrows(NoSuchObjectException.class,
                 () -> new CommandLine(new NotebookCommands()).execute(removeArgs));

@@ -11,7 +11,7 @@ import com.google.gson.reflect.TypeToken;
 
 public class Notebook {
 
-    public static class Note {
+    private static class Note {
         final private String name;
         final private Calendar addingTime;
         final private String content;
@@ -79,8 +79,6 @@ public class Notebook {
         if (check == null) {
             this.printFilteredNotes(args);
         } else {
-            SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy k:mm");
-            Date date = sdf.parse(args[1]);
             this.printFilteredByDateNotes(args);
         }
     }
@@ -165,5 +163,4 @@ public class Notebook {
         }
         return list;
     }
-
 }
