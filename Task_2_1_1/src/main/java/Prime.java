@@ -34,7 +34,7 @@ public class Prime {
     public boolean hasPrimesParallelThreads(Integer[] arr, int threadsAmount) throws InterruptedException {
         System.out.print(threadsAmount + " threads  --  ");
         long time0 = System.currentTimeMillis();
-        AtomicBoolean result = new AtomicBoolean();
+        AtomicBoolean result = new AtomicBoolean(false);
         int len = arr.length;
 
         List<Thread> threads = new ArrayList<>(threadsAmount);
