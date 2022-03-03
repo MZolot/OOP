@@ -18,8 +18,8 @@ public class Prime {
         return false;
     }
 
-    public boolean hasPrimesConcurrent(Integer[] arr) {
-        System.out.print("Concurrent --  ");
+    public boolean hasPrimesSingleThread(Integer[] arr) {
+        System.out.print("One Thread --  ");
         long time0 = System.currentTimeMillis();
         for (int i : arr) {
             if (isNotPrime(i)) {
@@ -44,8 +44,11 @@ public class Prime {
                 boolean res;
                 for (int j = threadNumber; j < len; j = j + threadsAmount) {
                     res = isNotPrime(arr[j]);
-                    if (res || result.get()) {
+                    if (res) {
                         result.set(true);
+                        break;
+                    }
+                    if (result.get()) {
                         break;
                     }
                 }
