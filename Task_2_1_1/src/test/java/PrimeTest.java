@@ -32,7 +32,7 @@ class PrimeTest {
     @Test
     void hasPrimesSingleThread() throws IOException {
         BufferedReader reader = new BufferedReader(new FileReader("test_numbers.txt"));
-        String[] strArr = reader.readLine().split(", ");
+        String[] strArr = reader.readLine().split(" ");
         Integer[] arr = new Integer[strArr.length];
         for (int i = 0; i < strArr.length; i++) {
             arr[i] = Integer.parseInt(strArr[i]);
@@ -44,7 +44,7 @@ class PrimeTest {
     @Test
     void hasPrimes2ParallelThreads() throws IOException, InterruptedException, ExecutionException {
         BufferedReader reader = new BufferedReader(new FileReader("test_numbers.txt"));
-        String[] strArr = reader.readLine().split(", ");
+        String[] strArr = reader.readLine().split(" ");
         Integer[] arr = new Integer[strArr.length];
         for (int i = 0; i < strArr.length; i++) {
             arr[i] = Integer.parseInt(strArr[i]);
@@ -56,7 +56,7 @@ class PrimeTest {
     @Test
     void hasPrimes8ParallelThreads() throws IOException, InterruptedException, ExecutionException {
         BufferedReader reader = new BufferedReader(new FileReader("test_numbers.txt"));
-        String[] strArr = reader.readLine().split(", ");
+        String[] strArr = reader.readLine().split(" ");
         Integer[] arr = new Integer[strArr.length];
         for (int i = 0; i < strArr.length; i++) {
             arr[i] = Integer.parseInt(strArr[i]);
@@ -68,7 +68,7 @@ class PrimeTest {
     @Test
     void hasPrimesParallelStream() throws IOException {
         BufferedReader reader = new BufferedReader(new FileReader("test_numbers.txt"));
-        String[] strArr = reader.readLine().split(", ");
+        String[] strArr = reader.readLine().split(" ");
         Integer[] arr = new Integer[strArr.length];
         for (int i = 0; i < strArr.length; i++) {
             arr[i] = Integer.parseInt(strArr[i]);
