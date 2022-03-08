@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.concurrent.ExecutionException;
 
 class PrimeTest {
 
@@ -15,7 +16,7 @@ class PrimeTest {
     }
 
     @Test
-    void testFromTaskParallelThreads() throws InterruptedException {
+    void testFromTaskParallelThreads() throws InterruptedException, ExecutionException {
         Prime prime = new Prime();
         Integer[] arr = {6997901, 6997927, 6997937, 6997967, 6998009, 6998029, 6998039, 6998051, 6998053};
         Assertions.assertFalse(prime.hasPrimesParallelThreads(arr, 2));
@@ -41,7 +42,7 @@ class PrimeTest {
     }
 
     @Test
-    void hasPrimes2ParallelThreads() throws IOException, InterruptedException {
+    void hasPrimes2ParallelThreads() throws IOException, InterruptedException, ExecutionException {
         BufferedReader reader = new BufferedReader(new FileReader("test_numbers.txt"));
         String[] strArr = reader.readLine().split(", ");
         Integer[] arr = new Integer[strArr.length];
@@ -53,7 +54,7 @@ class PrimeTest {
     }
 
     @Test
-    void hasPrimes10ParallelThreads() throws IOException, InterruptedException {
+    void hasPrimes8ParallelThreads() throws IOException, InterruptedException, ExecutionException {
         BufferedReader reader = new BufferedReader(new FileReader("test_numbers.txt"));
         String[] strArr = reader.readLine().split(", ");
         Integer[] arr = new Integer[strArr.length];
@@ -61,7 +62,7 @@ class PrimeTest {
             arr[i] = Integer.parseInt(strArr[i]);
         }
         Prime prime = new Prime();
-        Assertions.assertFalse(prime.hasPrimesParallelThreads(arr, 10));
+        Assertions.assertFalse(prime.hasPrimesParallelThreads(arr, 8));
     }
 
     @Test

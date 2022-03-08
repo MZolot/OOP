@@ -2,6 +2,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class Prime {
@@ -19,7 +20,7 @@ public class Prime {
     }
 
     public boolean hasPrimesSingleThread(Integer[] arr) {
-        System.out.print("One Thread --  ");
+        System.out.print("Single thread --  ");
         long time0 = System.currentTimeMillis();
         for (int i : arr) {
             if (isNotPrime(i)) {
@@ -31,43 +32,40 @@ public class Prime {
         return false;
     }
 
-    public boolean hasPrimesParallelThreads(Integer[] arr, int threadsAmount) throws InterruptedException {
-        System.out.print(threadsAmount + " threads  --  ");
+    public boolean hasPrimesParallelThreads(Integer[] arr, int threadsAmount) throws InterruptedException, ExecutionException {
+        System.out.print(threadsAmount + " threads     --  ");
         long time0 = System.currentTimeMillis();
-        AtomicBoolean result = new AtomicBoolean(false);
         int len = arr.length;
-
-        List<Thread> threads = new ArrayList<>(threadsAmount);
+        ExecutorService executorService = Executors.newFixedThreadPool(threadsAmount);
+        List<Future<Boolean>> futureList = new ArrayList<>();
         for (int i = 0; i < threadsAmount; i++) {
             int threadNumber = i;
-            Runnable runnable = () -> {
-                boolean res;
+            Callable<Boolean> callable = () -> {
                 for (int j = threadNumber; j < len; j = j + threadsAmount) {
-                    res = isNotPrime(arr[j]);
-                    if (res) {
-                        result.set(true);
-                        break;
-                    }
-                    if (result.get()) {
-                        break;
+                    if (isNotPrime(arr[j])) {
+                        return true;
                     }
                 }
+                return false;
             };
-            Thread thread = new Thread(runnable);
-            threads.add(thread);
-            thread.start();
+            Future<Boolean> future = executorService.submit(callable);
+            futureList.add(future);
         }
-        for (Thread t : threads) {
-            t.join();
+        for (Future<Boolean> future : futureList) {
+            if (future.get()) {
+                executorService.shutdown();
+                System.out.println((System.currentTimeMillis() - time0) + "ms");
+                return true;
+            }
         }
-
+        executorService.shutdown();
         System.out.println((System.currentTimeMillis() - time0) + "ms");
-        return result.get();
+        return false;
     }
 
     public boolean hasPrimesParallelStream(Integer[] arr) {
         Collection<Integer> collection = Arrays.asList(arr);
-        System.out.print("Stream     --  ");
+        System.out.print("Stream        --  ");
         long time0 = System.currentTimeMillis();
         boolean res = collection.parallelStream().anyMatch(this::isNotPrime);
         System.out.println((System.currentTimeMillis() - time0) + "ms");
