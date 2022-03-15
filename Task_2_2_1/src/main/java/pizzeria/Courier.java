@@ -2,24 +2,27 @@ package pizzeria;
 
 class Courier implements Runnable {
 
-    final private Pizzeria pizzeria;
-    //final private int trunkSize;
+    final private SynchronizedQueue storage;
+    final private int trunkSize;
 
-    Courier(Pizzeria pizzeria) {
-        this.pizzeria = pizzeria;
-        //this.trunkSize = trunkSize;
+    Courier(SynchronizedQueue storage, int trunkSize) {
+        this.storage = storage;
+        this.trunkSize = trunkSize;
     }
 
     @Override
     public void run() {
         while (true) {
             try {
-                int order = pizzeria.takeFromStorage();
-                System.out.println(order + " [delivering]");
+                int[] orders = storage.take(trunkSize);
+                for (int order : orders) {
+                    System.out.println(order + " [delivering]");
+                }
                 Thread.sleep(1000); //delivering
-                System.out.println(order + " [delivered]");
-            }
-            catch (InterruptedException exception) {
+                for (int order : orders) {
+                    System.out.println(order + " [delivered]");
+                }
+            } catch (InterruptedException exception) {
                 exception.printStackTrace();
             }
         }
