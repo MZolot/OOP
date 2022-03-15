@@ -1,27 +1,30 @@
 package pizzeria;
 
 class Baker implements Runnable {
-    final private Pizzeria pizzeria;
+    final private SynchronizedQueue queue;
+    final private SynchronizedQueue storage;
     final private int bakingTime;
+    boolean busy;
 
-    Baker(Pizzeria pizzeria, int experience) {
-        this.pizzeria = pizzeria;
+    Baker(SynchronizedQueue queue, SynchronizedQueue storage, int experience) {
+        this.queue = queue;
+        this.storage = storage;
         bakingTime = 10000 / experience;
+        busy = false;
     }
 
     @Override
     public void run() {
-        while (true) {
-            try {
-                int order = pizzeria.takeFromQueue();
-                System.out.println(order + " [started baking]");
-                Thread.sleep(bakingTime); //baking
-                System.out.println(order + " [baked]");
-                pizzeria.addToStorage(order);
-            }
-            catch (InterruptedException exception) {
-                exception.printStackTrace();
-            }
+        try {
+            int order = queue.take();
+            busy = true;
+            System.out.println(order + " [started baking]");
+            Thread.sleep(bakingTime); //baking
+            System.out.println(order + " [baked]");
+            storage.add(order);
+            busy = false;
+        } catch (InterruptedException exception) {
+            exception.printStackTrace();
         }
     }
 
