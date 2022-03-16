@@ -37,7 +37,7 @@ public class SynchronizedQueue {
         while (orders.isEmpty()) {
             wait();
         }
-        int amount = Math.max(orders.size(), maxAmount);
+        int amount = Math.min(orders.size(), maxAmount);
         int[] ordersOut = new int[amount];
         for (int i = 0; i < amount; i++) {
             ordersOut[i] = orders.remove();
