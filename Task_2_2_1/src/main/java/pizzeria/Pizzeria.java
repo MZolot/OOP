@@ -2,6 +2,7 @@ package pizzeria;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -13,6 +14,7 @@ public class Pizzeria {
     final SynchronizedQueue storage;
     final SynchronizedQueue queue;
     final Parameters parameters;
+    final Manager manager;
     int orderNumber;
 
     public Pizzeria(File parametersFile, int queueSize, int storageSize) throws IOException {
@@ -21,24 +23,25 @@ public class Pizzeria {
         orderNumber = 1;
         Deserializer deserializer = new Deserializer(parametersFile);
         parameters = deserializer.deserialize();
+        Arrays.sort(parameters.bakers);
+        Arrays.sort(parameters.couriers);
+        manager = new Manager(this);
     }
 
     public void run(int ordersAmount) throws InterruptedException {
         for (int i = 1; i <= ordersAmount; i++)
             queue.add(i);
 
-        ExecutorService bakers = Executors.newFixedThreadPool(parameters.bakersAmt);
         ExecutorService couriers = Executors.newFixedThreadPool(parameters.couriersAmt);
-
-        for (int i : parameters.bakers) {
-            Runnable baker = new Baker(this.queue, this.storage, i);
-            bakers.submit(baker);
-        }
 
         for (int i : parameters.couriers) {
             Runnable courier = new Courier(this.storage, i);
             couriers.submit(courier);
         }
+
+        manager.manage();
+        System.out.println("managed");
+
     }
 
 
