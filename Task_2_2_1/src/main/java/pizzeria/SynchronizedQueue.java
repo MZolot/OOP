@@ -10,7 +10,7 @@ public class SynchronizedQueue {
 
     SynchronizedQueue(int maxSize, String name) {
         this.maxSize = maxSize;
-        orders = new ArrayDeque<>();
+        this.orders = new ArrayDeque<>();
         this.name = name;
     }
 
@@ -23,7 +23,7 @@ public class SynchronizedQueue {
         this.notifyAll();
     }
 
-    synchronized int take() throws InterruptedException {
+    synchronized int remove() throws InterruptedException {
         while (orders.isEmpty()) {
             wait();
         }
@@ -33,7 +33,7 @@ public class SynchronizedQueue {
         return order;
     }
 
-    synchronized int[] take(int maxAmount) throws InterruptedException {
+    synchronized int[] remove(int maxAmount) throws InterruptedException {
         while (orders.isEmpty()) {
             wait();
         }
@@ -47,7 +47,7 @@ public class SynchronizedQueue {
         return ordersOut;
     }
 
-    boolean isEmpty() {
+    synchronized boolean isEmpty() {
         return orders.isEmpty();
     }
 }

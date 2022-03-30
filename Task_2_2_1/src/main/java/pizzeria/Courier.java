@@ -4,27 +4,30 @@ class Courier implements Runnable {
 
     final private SynchronizedQueue storage;
     final private int trunkSize;
+    boolean free;
 
-    Courier(SynchronizedQueue storage, int trunkSize) {
-        this.storage = storage;
+
+    Courier(Pizzeria pizzeria, int trunkSize) {
+        this.storage = pizzeria.storage;
         this.trunkSize = trunkSize;
+        this.free = true;
     }
 
     @Override
     public void run() {
-        while (true) {
-            try {
-                int[] orders = storage.take(trunkSize);
-                for (int order : orders) {
-                    System.out.println(order + " [delivering]");
-                }
-                Thread.sleep(1000); //delivering
-                for (int order : orders) {
-                    System.out.println(order + " [delivered]");
-                }
-            } catch (InterruptedException exception) {
-                exception.printStackTrace();
+        try {
+            this.free = false;
+            int[] orders = storage.remove(trunkSize);
+            for (int order : orders) {
+                System.out.println(order + " [delivering]");
             }
+            for (int order : orders) {
+                Thread.sleep((int) (Math.random() * 1000)); //delivering
+                System.out.println(order + " [delivered]");
+            }
+            this.free = true;
+        } catch (InterruptedException exception) {
+            exception.printStackTrace();
         }
     }
 }

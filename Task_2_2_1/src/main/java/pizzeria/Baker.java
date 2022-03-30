@@ -6,9 +6,9 @@ class Baker implements Runnable {
     final private int bakingTime;
     boolean free;
 
-    Baker(SynchronizedQueue queue, SynchronizedQueue storage, int experience) {
-        this.queue = queue;
-        this.storage = storage;
+    Baker(Pizzeria pizzeria, int experience) {
+        this.queue = pizzeria.queue;
+        this.storage = pizzeria.storage;
         bakingTime = 10000 / experience;
         this.free = true;
     }
@@ -16,8 +16,8 @@ class Baker implements Runnable {
     @Override
     public void run() {
         try {
-            int order = queue.take();
             this.free = false;
+            int order = queue.remove();
             System.out.println(order + " [started baking]");
             Thread.sleep(bakingTime); //baking
             System.out.println(order + " [baked]");
