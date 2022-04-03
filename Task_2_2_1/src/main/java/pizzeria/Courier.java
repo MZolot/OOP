@@ -2,12 +2,14 @@ package pizzeria;
 
 class Courier implements Runnable {
 
+    final private Pizzeria pizzeria;
     final private SynchronizedQueue storage;
     final private int trunkSize;
     boolean free;
 
 
     Courier(Pizzeria pizzeria, int trunkSize) {
+        this.pizzeria = pizzeria;
         this.storage = pizzeria.storage;
         this.trunkSize = trunkSize;
         this.free = true;
@@ -22,9 +24,10 @@ class Courier implements Runnable {
                 System.out.println(order + " [delivering]");
             }
             for (int order : orders) {
-                Thread.sleep((int) (Math.random() * 1000)); //delivering
+                Thread.sleep((int) (Math.random() * 10000)); //delivering
                 System.out.println(order + " [delivered]");
             }
+            pizzeria.updateCompleteOrders(orders.length);
             this.free = true;
         } catch (InterruptedException exception) {
             exception.printStackTrace();

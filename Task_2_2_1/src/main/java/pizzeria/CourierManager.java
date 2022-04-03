@@ -3,24 +3,16 @@ package pizzeria;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
 
-public class CourierManager implements Runnable {
+class CourierManager implements Runnable {
     final Pizzeria pizzeria;
-    AtomicBoolean working;
 
     CourierManager(Pizzeria pizzeria) {
         this.pizzeria = pizzeria;
-        working = new AtomicBoolean();
-    }
-
-    boolean isWorking() {
-        return working.get();
     }
 
     @Override
     public void run() {
-        working.set(true);
         int couriersAmount = pizzeria.parameters.couriers().size();
         ExecutorService couriersPool = Executors.newFixedThreadPool(couriersAmount);
         Courier[] couriers = new Courier[couriersAmount];
@@ -28,28 +20,34 @@ public class CourierManager implements Runnable {
             couriers[i] = new Courier(pizzeria, pizzeria.parameters.couriers().get(i));
         }
 
-        while (pizzeria.isOpen() || !pizzeria.storage.isEmpty()) {
+        while (pizzeria.isOpen() || (pizzeria.getCompleteOrders() != pizzeria.getOrderNumber() - 1)) {
+            /*
+            try {
+                pizzeria.storage.tryRemove();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+             */
             if (pizzeria.storage.isEmpty()) {
                 try {
                     Thread.sleep(100);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-            } else {
-                for (Courier courier : couriers) {
-                    if (courier.free) {
-                        couriersPool.submit(courier);
-                        break;
-                    }
+                continue;
+            }
+            for (Courier courier : couriers) {
+                if (courier.free) {
+                    couriersPool.submit(courier);
+                    break;
                 }
             }
         }
+        couriersPool.shutdown();
         try {
-            couriersPool.awaitTermination(10000, TimeUnit.MILLISECONDS);
+            couriersPool.awaitTermination(11000, TimeUnit.MILLISECONDS);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        couriersPool.shutdown();
-        working.set(false);
     }
 }

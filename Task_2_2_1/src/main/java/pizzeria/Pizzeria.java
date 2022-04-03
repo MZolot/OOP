@@ -3,35 +3,34 @@ package pizzeria;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.Scanner;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class Pizzeria {
 
-    record Parameters(List<Integer> bakers, List<Integer> couriers) {
+    record Parameters(int queueSize, int storageSize, List<Integer> bakers, List<Integer> couriers) {
     }
 
     final SynchronizedQueue queue;
     final SynchronizedQueue storage;
     final Parameters parameters;
-    final BakerManager bakerManager;
-    final CourierManager courierManager;
-    int orderNumber;
-    AtomicBoolean open;
+    private int orderNumber;
+    private AtomicInteger completeOrders;
+    private AtomicBoolean open;
     private final ExecutorService managers;
 
-    public Pizzeria(File parametersFile, int queueSize, int storageSize) throws IOException {
+    public Pizzeria(File parametersFile) throws IOException {
         open = new AtomicBoolean();
-        queue = new SynchronizedQueue(queueSize, "queue");
-        storage = new SynchronizedQueue(storageSize, "storage");
-        orderNumber = 1;
-        bakerManager = new BakerManager(this);
-        courierManager = new CourierManager(this);
-
         Deserializer deserializer = new Deserializer(parametersFile);
         parameters = deserializer.deserializeParameters();
-
+        queue = new SynchronizedQueue(parameters.queueSize, "queue");
+        storage = new SynchronizedQueue(parameters.storageSize, "storage");
+        orderNumber = 1;
+        completeOrders = new AtomicInteger(0);
         managers = Executors.newFixedThreadPool(2);
     }
 
@@ -44,30 +43,38 @@ public class Pizzeria {
         orderNumber++;
     }
 
-    public void open(int ordersAmount) throws InterruptedException {
-        open.set(true);
-        for (int i = 1; i <= ordersAmount; i++)
-            order();
-        managers.submit(bakerManager);
-        managers.submit(courierManager);
+    void updateCompleteOrders(int completed) {
+        completeOrders.set(completeOrders.get() + completed);
     }
 
-    public void close() {
+    int getCompleteOrders() {
+        return completeOrders.get();
+    }
+
+    int getOrderNumber() {
+        return orderNumber;
+    }
+
+    public void open() {
+        System.out.println("OPEN");
+        open.set(true);
+        managers.submit(new BakerManager(this));
+        managers.submit(new CourierManager(this));
+    }
+
+    public void close() throws InterruptedException {
         open.set(false);
-        while (bakerManager.isWorking() || courierManager.isWorking()) {}
         managers.shutdown();
+        managers.awaitTermination(30, TimeUnit.SECONDS);
+        System.out.println("CLOSED");
         System.exit(0);
     }
 
-    public void run(int ordersAmount) throws InterruptedException {
-        open(ordersAmount);
-        Thread.sleep(5000);
+    public void work() throws InterruptedException {
+        Scanner scanner = new Scanner(System.in);
+        open();
+        while (!scanner.hasNextLine()) {}
+        System.out.println("CLOSING");
         close();
     }
-
-    public static void main(String[] args) throws IOException, InterruptedException {
-        Pizzeria pizzeria = new Pizzeria(new File("workers.json"), 100, 2);
-        pizzeria.run(6);
-    }
-
 }

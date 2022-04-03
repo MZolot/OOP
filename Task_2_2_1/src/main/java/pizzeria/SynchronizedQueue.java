@@ -3,7 +3,7 @@ package pizzeria;
 import java.util.ArrayDeque;
 import java.util.Queue;
 
-public class SynchronizedQueue {
+class SynchronizedQueue {
     private final int maxSize;
     private final Queue<Integer> orders;
     private final String name;
@@ -20,8 +20,16 @@ public class SynchronizedQueue {
         }
         orders.add(order);
         System.out.println(order + " [stored]   (" + orders.size() + " in " + name + ")");
-        this.notifyAll();
+        this.notify();
     }
+
+    /*
+    synchronized void tryRemove() throws InterruptedException {
+        while (orders.isEmpty()) {
+            wait();
+        }
+    }
+     */
 
     synchronized int remove() throws InterruptedException {
         while (orders.isEmpty()) {
@@ -29,7 +37,7 @@ public class SynchronizedQueue {
         }
         int order = orders.remove();
         System.out.println(order + " [taken]    (" + orders.size() + " in " + name + ")");
-        this.notifyAll();
+        this.notify();
         return order;
     }
 
@@ -43,7 +51,7 @@ public class SynchronizedQueue {
             ordersOut[i] = orders.remove();
             System.out.println(ordersOut[i] + " [taken]    (" + orders.size() + " in " + name + ")");
         }
-        this.notifyAll();
+        this.notify();
         return ordersOut;
     }
 
