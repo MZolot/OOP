@@ -5,13 +5,15 @@ class Courier implements Runnable {
     final private Pizzeria pizzeria;
     final private SynchronizedQueue storage;
     final private int trunkSize;
+    final private int speed;
     boolean free;
 
 
-    Courier(Pizzeria pizzeria, int trunkSize) {
+    Courier(Pizzeria pizzeria, int trunkSize, int speed) {
         this.pizzeria = pizzeria;
         this.storage = pizzeria.storage;
         this.trunkSize = trunkSize;
+        this.speed = speed;
         this.free = true;
     }
 
@@ -24,7 +26,7 @@ class Courier implements Runnable {
                 System.out.println(order + " [delivering]");
             }
             for (int order : orders) {
-                Thread.sleep((int) (Math.random() * 10000)); //delivering
+                Thread.sleep((int) (Math.random() * 1000 * speed)); //delivering
                 System.out.println(order + " [delivered]");
             }
             pizzeria.updateCompleteOrders(orders.length);
