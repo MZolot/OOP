@@ -22,12 +22,19 @@ class Deserializer {
             for (JsonElement baker : jsonBakers) {
                 bakers.add(baker.getAsInt());
             }
-            JsonArray jsonCouriers = jsonObject.getAsJsonArray("couriers");
-            List<Integer> couriers = new ArrayList<>();
-            for (JsonElement courier : jsonCouriers) {
-                couriers.add(courier.getAsInt());
+            JsonArray jsonCouriersTrunk = jsonObject.getAsJsonArray("couriers trunk sizes");
+            JsonArray jsonCouriersSpeed = jsonObject.getAsJsonArray("couriers speed");
+            if (jsonCouriersSpeed.size() != jsonCouriersTrunk.size()) {
+                throw new IllegalArgumentException("Trunk size and speed should be specified for each courier.");
             }
-            return new Pizzeria.Parameters(queueSize, storageSize,bakers.stream().sorted().collect(Collectors.toList()), couriers);
+            List<Integer[]> couriers = new ArrayList<>();
+            for (int i = 0; i < jsonCouriersTrunk.size(); i++) {
+                Integer[] element = new Integer[2];
+                element[0] = jsonCouriersTrunk.get(i).getAsInt();
+                element[1] = jsonCouriersSpeed.get(i).getAsInt();
+                couriers.add(element);
+            }
+            return new Pizzeria.Parameters(queueSize, storageSize, bakers.stream().sorted().collect(Collectors.toList()), couriers);
         }
     }
 
@@ -44,5 +51,10 @@ class Deserializer {
 
     Pizzeria.Parameters deserializeParameters() {
         return gson.fromJson(reader, Pizzeria.Parameters.class);
+    }
+
+    public static void main(String[] args) throws IOException {
+        Deserializer deserializer = new Deserializer(new File("config.json"));
+        Pizzeria.Parameters parameters = deserializer.deserializeParameters();
     }
 }

@@ -23,13 +23,12 @@ class SynchronizedQueue {
         this.notify();
     }
 
-    /*
-    synchronized void tryRemove() throws InterruptedException {
-        while (orders.isEmpty()) {
-            wait();
+    synchronized boolean canRemove() throws InterruptedException {
+        if (orders.isEmpty()) {
+            wait(1000);
         }
+        return !orders.isEmpty();
     }
-     */
 
     synchronized int remove() throws InterruptedException {
         while (orders.isEmpty()) {

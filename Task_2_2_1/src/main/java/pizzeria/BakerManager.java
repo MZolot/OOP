@@ -21,26 +21,17 @@ class BakerManager implements Runnable {
         }
 
         while (pizzeria.isOpen() || !pizzeria.queue.isEmpty()) {
-            /*
             try {
-                pizzeria.queue.tryRemove();
+                if (pizzeria.queue.canRemove()) {
+                    for (Baker baker : bakers) {
+                        if (baker.free) {
+                            bakersPool.submit(baker);
+                            break;
+                        }
+                    }
+                }
             } catch (InterruptedException e) {
                 e.printStackTrace();
-            }
-             */
-            if (pizzeria.queue.isEmpty()) {
-                try {
-                    Thread.sleep(100);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                continue;
-            }
-            for (Baker baker : bakers) {
-                if (baker.free) {
-                    bakersPool.submit(baker);
-                    break;
-                }
             }
         }
         bakersPool.shutdown();

@@ -12,7 +12,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class Pizzeria {
 
-    record Parameters(int queueSize, int storageSize, List<Integer> bakers, List<Integer> couriers) {
+    record Parameters(int queueSize, int storageSize, List<Integer> bakers, List<Integer[]> couriers) {
     }
 
     final SynchronizedQueue queue;
@@ -65,7 +65,7 @@ public class Pizzeria {
     public void close() throws InterruptedException {
         open.set(false);
         managers.shutdown();
-        managers.awaitTermination(30, TimeUnit.SECONDS);
+        System.out.println(managers.awaitTermination(30, TimeUnit.SECONDS));
         System.out.println("CLOSED");
         System.exit(0);
     }
