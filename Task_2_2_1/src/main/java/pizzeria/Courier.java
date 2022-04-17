@@ -26,7 +26,7 @@ class Courier implements Runnable {
                 System.out.println(order + " [delivering]");
             }
             for (int order : orders) {
-                Thread.sleep((int) (Math.random() * 1000 * speed)); //delivering
+                Thread.sleep((int) (Math.random() * 10000 / speed)); //delivering
                 System.out.println(order + " [delivered]");
             }
             pizzeria.updateCompleteOrders(orders.length);

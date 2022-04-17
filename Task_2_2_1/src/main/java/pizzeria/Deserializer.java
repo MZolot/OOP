@@ -13,7 +13,8 @@ class Deserializer {
     public class ParametersDeserializer implements JsonDeserializer<Pizzeria.Parameters> {
 
         @Override
-        public Pizzeria.Parameters deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+        public Pizzeria.Parameters deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
+                throws JsonParseException {
             JsonObject jsonObject = json.getAsJsonObject();
             int queueSize = jsonObject.get("queue").getAsInt();
             int storageSize = jsonObject.get("storage").getAsInt();
@@ -34,7 +35,9 @@ class Deserializer {
                 element[1] = jsonCouriersSpeed.get(i).getAsInt();
                 couriers.add(element);
             }
-            return new Pizzeria.Parameters(queueSize, storageSize, bakers.stream().sorted().collect(Collectors.toList()), couriers);
+            return new Pizzeria.Parameters(queueSize, storageSize,
+                    bakers.stream().sorted().collect(Collectors.toList()),
+                    couriers.stream().sorted().collect(Collectors.toList()));
         }
     }
 

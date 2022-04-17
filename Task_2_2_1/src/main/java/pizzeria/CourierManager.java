@@ -1,8 +1,6 @@
 package pizzeria;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 class CourierManager implements Runnable {
     final Pizzeria pizzeria;
@@ -38,7 +36,7 @@ class CourierManager implements Runnable {
         }
         couriersPool.shutdown();
         try {
-            couriersPool.awaitTermination(20000, TimeUnit.MILLISECONDS);
+            couriersPool.awaitTermination(21000, TimeUnit.MILLISECONDS);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
