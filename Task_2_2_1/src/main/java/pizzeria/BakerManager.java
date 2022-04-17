@@ -36,7 +36,7 @@ class BakerManager implements Runnable {
         }
         bakersPool.shutdown();
         try {
-            bakersPool.awaitTermination(11000, TimeUnit.MILLISECONDS);
+            bakersPool.awaitTermination(10001, TimeUnit.MILLISECONDS);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

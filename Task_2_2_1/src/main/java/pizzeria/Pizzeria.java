@@ -25,12 +25,13 @@ public class Pizzeria {
 
     public Pizzeria(File parametersFile) throws IOException {
         open = new AtomicBoolean();
+        orderNumber = 1;
+        completeOrders = new AtomicInteger(0);
+
         Deserializer deserializer = new Deserializer(parametersFile);
         parameters = deserializer.deserializeParameters();
         queue = new SynchronizedQueue(parameters.queueSize, "queue");
         storage = new SynchronizedQueue(parameters.storageSize, "storage");
-        orderNumber = 1;
-        completeOrders = new AtomicInteger(0);
         managers = Executors.newFixedThreadPool(2);
     }
 
@@ -65,7 +66,7 @@ public class Pizzeria {
     public void close() throws InterruptedException {
         open.set(false);
         managers.shutdown();
-        System.out.println(managers.awaitTermination(30, TimeUnit.SECONDS));
+        managers.awaitTermination(30, TimeUnit.SECONDS);
         System.out.println("CLOSED");
         System.exit(0);
     }
