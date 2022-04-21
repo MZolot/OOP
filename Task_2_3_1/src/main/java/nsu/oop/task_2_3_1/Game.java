@@ -4,9 +4,6 @@ import java.io.File;
 
 public class Game {
 
-    public record Coordinates(int x, int y) {
-    }
-
     Field field;
     Snake snake;
 
@@ -16,6 +13,10 @@ public class Game {
     }
 
     public void play() {
-
+        // здесь потом добавлю работу с моделью и контроллером, будет нормальный код
+        // а пока очень очень примерно
+        while(field.replaceFood()) {
+            snake.move(0, 0);
+        }
     }
 }

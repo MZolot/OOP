@@ -4,20 +4,23 @@ import java.io.File;
 
 class Field {
 
+    public record Coordinates(int x, int y) {
+    }
+
     static class Cell {
         boolean obstacle = false;
         boolean food = false;
     }
 
     Cell[][] field;
-    Game.Coordinates foodCoordinates;
+    Coordinates foodCoordinates;
     Game game;
 
     Field(File configFile, Game game) {
         //Deserializer deserializer = new Deserializer();
         //field = deserializer.deserializeField(configFile);
         field = new Cell[5][7];
-        foodCoordinates = new Game.Coordinates(0, 0);
+        foodCoordinates = new Coordinates(0, 0);
         this.game = game;
     }
 

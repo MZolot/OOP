@@ -5,15 +5,15 @@ import java.util.Deque;
 
 class Snake {
 
-    Deque<Game.Coordinates> body;
+    Deque<Field.Coordinates> body;
     Game game;
 
     Snake(Game game, int startX, int startY) {
         this.game = game;
         body = new ArrayDeque<>();
-        body.addFirst(new Game.Coordinates(startX - 2, startY));
-        body.addFirst(new Game.Coordinates(startX - 1, startY));
-        body.addFirst(new Game.Coordinates(startX, startY));
+        body.addFirst(new Field.Coordinates(startX - 2, startY));
+        body.addFirst(new Field.Coordinates(startX - 1, startY));
+        body.addFirst(new Field.Coordinates(startX, startY));
 
     }
 
@@ -21,12 +21,12 @@ class Snake {
         return body.size();
     }
 
-    Game.Coordinates headCoordinates() {
-        return new Game.Coordinates(body.getFirst().x(), body.getFirst().y());
+    Field.Coordinates headCoordinates() {
+        return new Field.Coordinates(body.getFirst().x(), body.getFirst().y());
     }
 
     boolean isBody(int x, int y) {
-        return body.contains(new Game.Coordinates(x, y));
+        return body.contains(new Field.Coordinates(x, y));
     }
 
     boolean move(int shiftX, int shiftY) {
@@ -37,7 +37,7 @@ class Snake {
                 isBody(newHeadX, newHeadY)) {
             return false;
         }
-        body.addFirst(new Game.Coordinates(newHeadX, newHeadY));
+        body.addFirst(new Field.Coordinates(newHeadX, newHeadY));
         if (!game.field.isFood(newHeadX, newHeadY)) {
             body.removeLast();
         }
