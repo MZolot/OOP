@@ -16,9 +16,8 @@ public class Client implements Runnable {
             while (pizzeria.isOpen()) {
                 System.out.println("ordering");
                 pizzeria.order();
-                Thread.sleep((int) (Math.random() * 10000));
+                Thread.sleep((int) (Math.random() * pizzeria.getTimeConstant()));
             }
-            System.out.println("no more pizza :(");
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

@@ -26,6 +26,7 @@ class BakerManager implements Runnable {
                     for (Baker baker : bakers) {
                         if (baker.free) {
                             bakersPool.submit(baker);
+                            Thread.sleep(pizzeria.timeConstant/10);
                             break;
                         }
                     }
@@ -36,7 +37,7 @@ class BakerManager implements Runnable {
         }
         bakersPool.shutdown();
         try {
-            bakersPool.awaitTermination(10001, TimeUnit.MILLISECONDS);
+            bakersPool.awaitTermination(pizzeria.getTimeConstant(), TimeUnit.MILLISECONDS);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
