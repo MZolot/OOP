@@ -26,6 +26,7 @@ class CourierManager implements Runnable {
                     for (Courier courier : couriers) {
                         if (courier.free) {
                             couriersPool.submit(courier);
+                            Thread.sleep(pizzeria.timeConstant/10);
                             break;
                         }
                     }
@@ -36,7 +37,7 @@ class CourierManager implements Runnable {
         }
         couriersPool.shutdown();
         try {
-            couriersPool.awaitTermination(21000, TimeUnit.MILLISECONDS);
+            couriersPool.awaitTermination((long)pizzeria.getTimeConstant() * 2, TimeUnit.MILLISECONDS);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

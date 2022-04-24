@@ -9,7 +9,7 @@ class Baker implements Runnable {
     Baker(Pizzeria pizzeria, int experience) {
         this.queue = pizzeria.queue;
         this.storage = pizzeria.storage;
-        bakingTime = 10000 / experience;
+        bakingTime = pizzeria.getTimeConstant() / experience;
         this.free = true;
     }
 
@@ -17,6 +17,10 @@ class Baker implements Runnable {
     public void run() {
         try {
             this.free = false;
+            if(!queue.canRemove()) {
+                this.free = true;
+                return;
+            }
             int order = queue.remove();
             System.out.println(order + " [started baking]");
             Thread.sleep(bakingTime); //baking

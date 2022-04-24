@@ -3,14 +3,13 @@ package pizzeria;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
-import java.util.Scanner;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class Pizzeria {
+public class Pizzeria implements Runnable{
 
     record Parameters(int queueSize, int storageSize, List<Integer> bakers, List<Integer[]> couriers) {
     }
@@ -18,6 +17,7 @@ public class Pizzeria {
     final SynchronizedQueue queue;
     final SynchronizedQueue storage;
     final Parameters parameters;
+    final int timeConstant = 10000;
     private int orderNumber;
     private AtomicInteger completeOrders;
     private AtomicBoolean open;
@@ -29,10 +29,14 @@ public class Pizzeria {
         completeOrders = new AtomicInteger(0);
 
         Deserializer deserializer = new Deserializer(parametersFile);
-        parameters = deserializer.deserializeParameters();
+        this.parameters = deserializer.deserializeParameters();
         queue = new SynchronizedQueue(parameters.queueSize, "queue");
         storage = new SynchronizedQueue(parameters.storageSize, "storage");
         managers = Executors.newFixedThreadPool(2);
+    }
+
+    public int getTimeConstant() {
+        return timeConstant;
     }
 
     public boolean isOpen() {
@@ -56,7 +60,7 @@ public class Pizzeria {
         return orderNumber;
     }
 
-    public void open() {
+    public void run() {
         System.out.println("OPEN");
         open.set(true);
         managers.submit(new BakerManager(this));
@@ -64,6 +68,7 @@ public class Pizzeria {
     }
 
     public void close() throws InterruptedException {
+        System.out.println("CLOSING");
         open.set(false);
         managers.shutdown();
         managers.awaitTermination(30, TimeUnit.SECONDS);
@@ -71,11 +76,4 @@ public class Pizzeria {
         System.exit(0);
     }
 
-    public void work() throws InterruptedException {
-        Scanner scanner = new Scanner(System.in);
-        open();
-        while (!scanner.hasNextLine()) {}
-        System.out.println("CLOSING");
-        close();
-    }
 }
