@@ -73,7 +73,6 @@ public class Pizzeria implements Runnable{
         managers.shutdown();
         managers.awaitTermination(30, TimeUnit.SECONDS);
         System.out.println("CLOSED");
-        System.exit(0);
     }
 
 }
