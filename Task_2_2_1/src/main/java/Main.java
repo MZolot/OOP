@@ -16,11 +16,12 @@ public class Main {
         for (int i = 0; i <clientsNumber; i++) {
             clients.submit(new Client(pizzeria));
         }
-        clients.shutdown();
 
         Scanner scanner = new Scanner(System.in);
         while (!scanner.hasNextLine()) {}
         pizzeria.close();
+        clients.shutdown();
+        pizzerias.shutdown();
 
     }
 }
