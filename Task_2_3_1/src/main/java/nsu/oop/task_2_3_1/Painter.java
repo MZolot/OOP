@@ -1,6 +1,5 @@
 package nsu.oop.task_2_3_1;
 
-import javafx.scene.Group;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
@@ -43,7 +42,7 @@ public class Painter {
         }
         canvas.setFill(Color.rgb(30, 0, 30));
         canvas.fillOval((snake.headCoordinates().x() + 0.4) * cellSize,
-                (snake.headCoordinates().x() + 0.4) * cellSize,
+                (snake.headCoordinates().y() + 0.4) * cellSize,
                 cellSize * 0.2, cellSize * 0.2);
     }
 

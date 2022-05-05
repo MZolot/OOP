@@ -9,11 +9,16 @@
         style="-fx-background-color: #1E001E"
         alignment="CENTER"
         spacing="20">
-    <Label fx:id="startLabel" text="Welcome to the Snake game!"
+
+    <Label text="You lost!"
+           alignment="CENTER"
+           style="-fx-text-fill: #FA96C8; -fx-font-size: 2em"/>
+
+    <Label text="Wanna try again?"
            alignment="CENTER"
            style="-fx-text-fill: #FA96C8; -fx-font-size: 1em"/>
 
-    <Button text="Start!" alignment="CENTER" fx:id="startButton"
+    <Button text="Play again!" alignment="CENTER" fx:id="startButton"
             onAction="#onStartButtonClick"
             style="-fx-background-color: #C80096; -fx-text-fill: #FA96C8; -fx-font-size: 2em"/>
 
