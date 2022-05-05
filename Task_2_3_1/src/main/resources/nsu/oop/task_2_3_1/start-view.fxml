@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+
+<Group
+        xmlns:fx="http://javafx.com/fxml"
+        fx:controller="nsu.oop.task_2_3_1.Controller">
+
+    <Button text="Start!" alignment="CENTER" fx:id="startButton"
+            onAction="#onStartButtonClick"/>
+
+</Group>

@@ -12,24 +12,33 @@ class Field {
         boolean food = false;
     }
 
+    int width = 15;
+    int height = 15;
     Cell[][] field;
     Coordinates foodCoordinates;
     Game game;
 
-    Field(File configFile, Game game) {
-        //Deserializer deserializer = new Deserializer();
-        //field = deserializer.deserializeField(configFile);
-        field = new Cell[5][7];
+    Field(Game game) {
+        field = new Cell[width][height];
+        for (int i = 0; i<width; i++) {
+            for (int j = 0; j<height; j++) {
+                field[i][j] = new Cell();
+            }
+        }
         foodCoordinates = new Coordinates(0, 0);
         this.game = game;
     }
 
-    int width() {
-        return field.length;
+    int getWidth() {
+        return width;
     }
 
-    int height() {
-        return field[0].length;
+    int getHeight() {
+        return height;
+    }
+
+    Coordinates getFoodCoordinates() {
+        return foodCoordinates;
     }
 
     boolean isFood(int x, int y) {
@@ -41,20 +50,22 @@ class Field {
     }
 
     boolean isBorder(int x, int y) {
-        return x < 0 || x > field.length || y < 0 || y > field[0].length;
+        return x < 0 || x > width || y < 0 || y > height;
     }
 
     boolean replaceFood() {
         field[foodCoordinates.x()][foodCoordinates.y()].food = false;
-        if (game.snake.size() == field.length * field[0].length) {
+        if (game.snake.size() == width * height) {
             return false;
         }
-        int newX = (int) (Math.random() * field.length);
-        int newY = (int) (Math.random() * field[0].length);
+        int newX = (int) (Math.random() * (width - 1));
+        int newY = (int) (Math.random() * (height - 1));
         while (isObstacle(newX, newY) || game.snake.isBody(newX, newY)) {
-            newX = (int) (Math.random() * field.length);
-            newY = (int) (Math.random() * field[0].length);
+            newX = (int) (Math.random() * (width - 1));
+            newY = (int) (Math.random() * (height - 1));
         }
+        foodCoordinates = new Coordinates(newX, newY);
+        field[newX][newY].food = true;
         return true;
     }
 
