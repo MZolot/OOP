@@ -72,10 +72,9 @@ class Snake {
     boolean canNotMove() { int newHeadX = headCoordinates().x() + directionToCoordinates().x();
         int newHeadY = headCoordinates().y() + directionToCoordinates().y();
         if (game.field.isBorder(newHeadX, newHeadY)) {
-            return false;
+            return true;
         }
-        return !game.field.isObstacle(newHeadX, newHeadY) &&
-                !isBody(newHeadX, newHeadY);
+        return game.field.isObstacle(newHeadX, newHeadY) || isBody(newHeadX, newHeadY);
     }
 
     void move() {

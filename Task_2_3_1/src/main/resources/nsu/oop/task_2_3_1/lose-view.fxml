@@ -12,14 +12,14 @@
 
     <Label text="You lost!"
            alignment="CENTER"
-           style="-fx-text-fill: #FA96C8; -fx-font-size: 2em"/>
+           style="-fx-text-fill: #FA96C8; -fx-font-size: 20"/>
 
     <Label text="Wanna try again?"
            alignment="CENTER"
-           style="-fx-text-fill: #FA96C8; -fx-font-size: 1em"/>
+           style="-fx-text-fill: #FA96C8; -fx-font-size: 15"/>
 
     <Button text="Play again!" alignment="CENTER" fx:id="startButton"
             onAction="#onStartButtonClick"
-            style="-fx-background-color: #C80096; -fx-text-fill: #FA96C8; -fx-font-size: 2em"/>
+            style="-fx-background-color: #C80096; -fx-text-fill: #FA96C8; -fx-font-size: 25"/>
 
 </VBox>

@@ -5,12 +5,20 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Insets;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.input.KeyCode;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.CornerRadii;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
@@ -23,6 +31,7 @@ public class Controller {
     Stage stage;
     Painter painter;
     Timeline timeline;
+    Label scoreLabel;
 
     @FXML
     private Button startButton;
@@ -34,9 +43,13 @@ public class Controller {
         stage = (Stage) startButton.getScene().getWindow();
 
         Canvas canvas = new Canvas(game.field.getWidth() * cellSize, game.field.getHeight() * cellSize);
-
-        Group rootGroup = new Group(canvas);
-        Scene gameScene = new Scene(rootGroup);
+        scoreLabel = new Label(game.score + "/" + game.maxScore);
+        scoreLabel.setTextFill(Color.rgb(250, 150, 200));
+        scoreLabel.setFont(new Font(15));
+        VBox root = new VBox(scoreLabel,canvas);
+        root.setBackground(new Background(new BackgroundFill(Color.BLACK, CornerRadii.EMPTY, Insets.EMPTY)));
+        //Group root = new Group(canvas, scoreLabel);
+        Scene gameScene = new Scene(root);
         stage.setScene(gameScene);
         stage.sizeToScene();
         stage.show();
@@ -93,6 +106,7 @@ public class Controller {
         painter.drawField(gc);
         painter.drawSnake(gc);
         painter.drawFood(gc);
+        scoreLabel.setText(game.score + "/" + game.maxScore);
     }
 
 }

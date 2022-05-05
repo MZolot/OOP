@@ -13,7 +13,6 @@ public class GameView extends Application {
     public void start(Stage stage) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("start-view.fxml"));
         Scene startScene = new Scene(fxmlLoader.load());
-
         stage.setScene(startScene);
         stage.setTitle("Snake 2007");
         stage.setWidth(600);
