@@ -1,4 +1,8 @@
-package nsu.oop.task_2_3_1;
+package nsu.oop.task_2_3_1.controller;
+
+import nsu.oop.task_2_3_1.HelloApplication;
+import nsu.oop.task_2_3_1.view.Painter;
+import nsu.oop.task_2_3_1.model.*;
 
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
@@ -6,7 +10,6 @@ import javafx.animation.Timeline;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
-import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
@@ -42,33 +45,30 @@ public class Controller {
         painter = new Painter(game, cellSize);
         stage = (Stage) startButton.getScene().getWindow();
 
-        Canvas canvas = new Canvas(game.field.getWidth() * cellSize, game.field.getHeight() * cellSize);
-        scoreLabel = new Label(game.score + "/" + game.maxScore);
+        Canvas canvas = new Canvas(game.getFieldWidth() * cellSize, game.getFieldHeight() * cellSize);
+        scoreLabel = new Label(game.getScore() + "/" + game.getMaxScore());
         scoreLabel.setTextFill(Color.rgb(250, 150, 200));
         scoreLabel.setFont(new Font(15));
         VBox root = new VBox(scoreLabel,canvas);
         root.setBackground(new Background(new BackgroundFill(Color.BLACK, CornerRadii.EMPTY, Insets.EMPTY)));
-        //Group root = new Group(canvas, scoreLabel);
         Scene gameScene = new Scene(root);
         stage.setScene(gameScene);
         stage.sizeToScene();
         stage.show();
 
         GraphicsContext graphicsContext = canvas.getGraphicsContext2D();
-        painter.drawField(graphicsContext);
-        painter.drawSnake(graphicsContext);
-        painter.drawFood(graphicsContext);
+        painter.drawGame(graphicsContext);
 
         gameScene.setOnKeyPressed(e -> {
             KeyCode code = e.getCode();
             if (code == KeyCode.RIGHT || code == KeyCode.D) {
-                game.snake.changeDirection(Snake.Direction.RIGHT);
+                game.changeSnakeDirection(Game.Direction.RIGHT);
             } else if (code == KeyCode.LEFT || code == KeyCode.A) {
-                game.snake.changeDirection(Snake.Direction.LEFT);
+                game.changeSnakeDirection(Game.Direction.LEFT);
             } else if (code == KeyCode.UP || code == KeyCode.W) {
-                game.snake.changeDirection(Snake.Direction.UP);
+                game.changeSnakeDirection(Game.Direction.UP);
             } else if (code == KeyCode.DOWN || code == KeyCode.S) {
-                game.snake.changeDirection(Snake.Direction.DOWN);
+                game.changeSnakeDirection(Game.Direction.DOWN);
             }
         });
 
@@ -84,7 +84,7 @@ public class Controller {
     }
 
     void run(GraphicsContext gc) throws IOException {
-        if (game.snake.canNotMove()) {
+        if (game.lose()) {
             timeline.stop();
             FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("lose-view.fxml"));
             Scene loseScene = new Scene(fxmlLoader.load());
@@ -102,11 +102,9 @@ public class Controller {
             stage.setScene(winScene);
             return;
         }
-        game.snake.move();
-        painter.drawField(gc);
-        painter.drawSnake(gc);
-        painter.drawFood(gc);
-        scoreLabel.setText(game.score + "/" + game.maxScore);
+        game.moveSnake();
+        painter.drawGame(gc);
+        scoreLabel.setText(game.getScore() + "/" + game.getMaxScore());
     }
 
 }

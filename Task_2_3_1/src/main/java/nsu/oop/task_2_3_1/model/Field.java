@@ -1,14 +1,11 @@
-package nsu.oop.task_2_3_1;
+package nsu.oop.task_2_3_1.model;
 
 class Field {
-
-    public record Coordinates(int x, int y) {
-    }
 
     private final int width;
     private final int height;
     boolean[][] field;
-    Coordinates foodCoordinates;
+    Game.Coordinates foodCoordinates;
     Game game;
 
     Field(Game game, int width, int height) {
@@ -25,7 +22,7 @@ class Field {
         field[3][2] = true;
         field[3][3] = true;
          */
-        foodCoordinates = new Coordinates(width / 2 + 2, height / 2);
+        foodCoordinates = new Game.Coordinates(width / 2 + 2, height / 2);
         this.game = game;
     }
 
@@ -37,12 +34,8 @@ class Field {
         return height;
     }
 
-    Coordinates getFoodCoordinates() {
-        return foodCoordinates;
-    }
-
     boolean isFood(int x, int y) {
-        return (x == foodCoordinates.x && y == foodCoordinates.y);
+        return (x == foodCoordinates.getX() && y == foodCoordinates.getY());
     }
 
     boolean isObstacle(int x, int y) {
@@ -60,7 +53,7 @@ class Field {
             newX = (int) (Math.random() * (width - 1));
             newY = (int) (Math.random() * (height - 1));
         }
-        foodCoordinates = new Coordinates(newX, newY);
+        foodCoordinates = new Game.Coordinates(newX, newY);
     }
 
 }

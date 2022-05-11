@@ -1,9 +1,10 @@
-package nsu.oop.task_2_3_1;
+package nsu.oop.task_2_3_1.view;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import nsu.oop.task_2_3_1.HelloApplication;
 
 import java.io.IOException;
 
