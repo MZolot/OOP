@@ -1,0 +1,13 @@
+package model;
+
+import groovy.lang.GroovyObjectSupport;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+
+@EqualsAndHashCode(callSuper = true)
+@Data
+public class Student extends GroovyObjectSupport {
+    private String nickname;
+    private String fullName;
+    private String repositoryURL;
+}
