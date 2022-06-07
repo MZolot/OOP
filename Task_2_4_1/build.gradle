@@ -6,6 +6,7 @@ version 'unspecified'
 
 repositories {
     mavenCentral()
+    maven { url 'https://repo.gradle.org/gradle/libs-releases' }
 }
 
 dependencies {
@@ -14,6 +15,9 @@ dependencies {
     implementation 'org.codehaus.groovy:groovy-all:2.4.15'
     compileOnly 'org.projectlombok:lombok:1.18.24'
     annotationProcessor 'org.projectlombok:lombok:1.18.24'
+    implementation 'org.eclipse.jgit:org.eclipse.jgit:5.4.2.201908231537-r'
+    implementation "org.gradle:gradle-tooling-api:5.2.1"
+    runtimeOnly 'org.slf4j:slf4j-simple:1.7.10'
 }
 
 test {
