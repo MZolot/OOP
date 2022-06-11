@@ -1,6 +1,5 @@
 package model;
 
-import groovy.lang.GroovyObjectSupport;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 

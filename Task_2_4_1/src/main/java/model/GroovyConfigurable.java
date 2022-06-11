@@ -1,9 +1,11 @@
 package model;
 
-import groovy.lang.Closure;
-import groovy.lang.GroovyObjectSupport;
-import groovy.lang.MetaProperty;
+import groovy.lang.*;
+import groovy.util.DelegatingScript;
+import org.codehaus.groovy.control.CompilerConfiguration;
 
+import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.ParameterizedType;
 import java.util.Collection;
@@ -18,7 +20,7 @@ public class GroovyConfigurable extends GroovyObjectSupport {
                     value instanceof Collection) {
                 ParameterizedType collectionType = (ParameterizedType)
                         getClass().getDeclaredField(metaProperty.getName()).getGenericType();
-                Class itemClass = (Class)collectionType.getActualTypeArguments()[0];
+                Class itemClass = (Class) collectionType.getActualTypeArguments()[0];
                 if (GroovyConfigurable.class.isAssignableFrom(itemClass)) {
                     Collection collection = (Collection) value;
                     Collection newValue = collection.getClass().newInstance();
@@ -37,6 +39,20 @@ public class GroovyConfigurable extends GroovyObjectSupport {
                     setProperty(metaProperty.getName(), newValue);
                 }
             }
+        }
+    }
+
+    public void configure(String filePath, boolean needsPostProcessing)
+            throws IOException, NoSuchFieldException, InvocationTargetException, InstantiationException,
+            IllegalAccessException, NoSuchMethodException {
+        CompilerConfiguration cc = new CompilerConfiguration();
+        cc.setScriptBaseClass(DelegatingScript.class.getName());
+        GroovyShell sh = new GroovyShell(new Binding(), cc);
+        DelegatingScript script = (DelegatingScript) sh.parse(new File(filePath));
+        script.setDelegate(this);
+        script.run();
+        if (needsPostProcessing) {
+            this.postProcess();
         }
     }
 }

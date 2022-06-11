@@ -18,6 +18,7 @@ dependencies {
     implementation 'org.eclipse.jgit:org.eclipse.jgit:5.4.2.201908231537-r'
     implementation "org.gradle:gradle-tooling-api:5.2.1"
     runtimeOnly 'org.slf4j:slf4j-simple:1.7.10'
+    implementation 'com.google.code.gson:gson:2.8.9'
 }
 
 test {
