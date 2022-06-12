@@ -1,8 +1,8 @@
-package reports;
+package nsu.oop.reports;
 
 import lombok.Getter;
-import model.Student;
-import model.Task;
+import nsu.oop.model.Student;
+import nsu.oop.model.Task;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,14 +22,22 @@ public class TaskReport {
 
         results = new ArrayList<>();
         for (Student student : students) {
-            handlers.GradleHandler gradleHandler = new handlers.GradleHandler();
+            nsu.oop.handlers.GradleHandler gradleHandler = new nsu.oop.handlers.GradleHandler();
             boolean buildRes = gradleHandler.buildTask(repositoriesPath.concat(student.getNickname()).concat(folderName));
             boolean testRes = gradleHandler.testTask(repositoriesPath.concat(student.getNickname()).concat(folderName));
-            int score = 0;
-            if (buildRes && testRes) {
-                score = task.getMaxScore();
-            }
-            results.add(new StudentReport(student.getFullName(), buildRes, testRes, score));
+            results.add(new StudentReport(student.getFullName(), buildRes, testRes,
+                    calculateScore(buildRes, testRes, task.getMaxScore())));
+        }
+    }
+
+    private int calculateScore(boolean buildResult, boolean testResult, int maxScore) {
+        if (buildResult && testResult) {
+            return maxScore;
+        } else if (buildResult || testResult) {
+            return maxScore/2;
+        }
+        else {
+            return 0;
         }
     }
 }

@@ -1,4 +1,4 @@
-package model;
+package nsu.oop.model;
 
 import groovy.lang.*;
 import groovy.util.DelegatingScript;

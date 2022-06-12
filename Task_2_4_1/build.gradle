@@ -19,8 +19,23 @@ dependencies {
     implementation "org.gradle:gradle-tooling-api:5.2.1"
     runtimeOnly 'org.slf4j:slf4j-simple:1.7.10'
     implementation 'com.google.code.gson:gson:2.8.9'
+    implementation 'info.picocli:picocli:4.6.2'
+    implementation group: 'org.slf4j', name: 'slf4j-api', version: '1.7.25'
+    implementation group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.25'
 }
 
 test {
     useJUnitPlatform()
+}
+
+
+jar {
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
+    manifest {
+        attributes "Main-Class":"nsu.oop.Main"
+    }
+    archiveName "dsl.jar"
+    from {
+        configurations.runtimeClasspath.findAll { it.name.endsWith('jar') }.collect { zipTree(it) }
+    }
 }

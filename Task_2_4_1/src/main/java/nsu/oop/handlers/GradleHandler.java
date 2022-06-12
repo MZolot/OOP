@@ -1,4 +1,4 @@
-package handlers;
+package nsu.oop.handlers;
 
 import org.gradle.tooling.*;
 import org.gradle.tooling.model.GradleProject;
@@ -26,11 +26,11 @@ public class GradleHandler {
                 connection.getModel(GradleProject.class).getProjectIdentifier().getBuildIdentifier().getRootDir());
         BuildLauncher build = connection.newBuild();
         build.forTasks("build");
-        build.run();
         try {
             build.run();
         } catch (BuildException e) {
             //System.out.println("Build unsuccessful");
+            connection.close();
             return false;
         }
         //System.out.println("Build successful");
@@ -66,6 +66,7 @@ public class GradleHandler {
             test.run();
         } catch (BuildException | TestExecutionException e) {
             //System.out.println("One or more tests failed");
+            connection.close();
             return false;
         }
         //System.out.println("Tests successful");

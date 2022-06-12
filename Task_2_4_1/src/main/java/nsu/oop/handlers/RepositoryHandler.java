@@ -1,6 +1,6 @@
-package handlers;
+package nsu.oop.handlers;
 
-import model.Student;
+import nsu.oop.model.Student;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.TransportException;
