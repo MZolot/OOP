@@ -29,9 +29,6 @@ public class Report {
         groupConfig.configure("Task_2_4_1/src/main/java/nsu/oop/configs/group_config.groovy", true);
         List<Student> students = groupConfig.getStudents();
 
-        RepositoryHandler repH = new RepositoryHandler(repositories);
-        repH.cloneRepository(students);
-
         taskReports = new ArrayList<>();
 
         for (Task task : tasks.getTasks()) {

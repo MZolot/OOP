@@ -20,6 +20,12 @@ tasks = [
             given = true
         },
         {
+            id = "2_3_1"
+            name = "Snake"
+            maxScore = 1
+            given = true
+        },
+        {
             id = "2_4_1"
             name = "DSL - Groovy"
             maxScore = 2

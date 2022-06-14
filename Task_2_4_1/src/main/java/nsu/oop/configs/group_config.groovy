@@ -6,6 +6,7 @@ students = [
             nickname = "alinaguselnikova"
             fullName = "Alina Guselnikova"
             repositoryURL = "https://github.com/alinaguselnikova/OOP.git"
+            mainBranch = "master"
             branches = [
                     {
                         id = "2_3_1"
@@ -23,10 +24,6 @@ students = [
             nickname = "swan0sasha"
             fullName = "Sasha Gerasimova"
             repositoryURL = "https://github.com/swan0sasha/OOP.git"
-        },
-        {
-            nickname = "vlada967"
-            fullName = "Vlada Arkhipova"
-            repositoryURL = "https://github.com/vlada967/OOP.git"
+            mainBranch = "master"
         }
 ]
