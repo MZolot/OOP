@@ -8,6 +8,9 @@ import java.io.File;
 public class GradleHandler {
 
     public boolean buildTask(String projectPath) {
+        if (projectPath == null) {
+            return false;
+        }
         File file = new File(projectPath);
         if (!file.exists()) {
             return false;
@@ -25,7 +28,7 @@ public class GradleHandler {
         System.out.println("Building " +
                 connection.getModel(GradleProject.class).getProjectIdentifier().getBuildIdentifier().getRootDir());
         BuildLauncher build = connection.newBuild();
-        build.forTasks("build");
+        build.forTasks("assemble");
         try {
             build.run();
         } catch (BuildException e) {

@@ -48,25 +48,18 @@ public class Report {
             writeNewReport();
         }
 
-        Group groupConfig = new Group();
-        groupConfig.configure("Task_2_4_1/src/main/java/nsu/oop/configs/group_config.groovy", true);
-        List<Student> students = groupConfig.getStudents();
-        int maxNicknameLen = 0;
-        for (Student student : students) {
-            maxNicknameLen = Math.max(maxNicknameLen, student.getNickname().length());
-        }
-
+        System.out.println("\nFinal report:");
         for (TaskReport taskReport : taskReports) {
             printTask(taskReport);
         }
     }
 
     private void printTask(TaskReport report) {
-        System.out.printf("%7s     Task %s (%s)   \n", "", report.getId(), report.getName());
-        System.out.print("|--------------------------------------------|\n");
-        System.out.printf("|%20s| Build | Tests | Score |\n", "");
+        System.out.printf("\n%8s     Task %s (%s)   \n", "", report.getId(), report.getName());
+        System.out.print("|---------------------------------------------|\n");
+        System.out.printf("|%21s| Build | Tests | Score |\n", "");
         for (TaskReport.StudentReport studentReport : report.getResults()) {
-            System.out.print("|--------------------------------------------|\n");
+            System.out.print("|---------------------------------------------|\n");
             System.out.printf("|%20s ", studentReport.name());
             if (studentReport.buildResult()) {
                 System.out.print("|   +   ");
@@ -78,8 +71,8 @@ public class Report {
             } else {
                 System.out.print("|   -   ");
             }
-            System.out.printf("|   %d  |\n", studentReport.score());
+            System.out.printf("|  %.1f  |\n", studentReport.score());
         }
-        System.out.print("|--------------------------------------------|\n\n");
+        System.out.print("|---------------------------------------------|\n\n");
     }
 }

@@ -1,6 +1,7 @@
 package nsu.oop.handlers;
 
 import nsu.oop.model.Student;
+
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.TransportException;
@@ -37,24 +38,27 @@ public class RepositoryHandler {
         directory.delete();
     }
 
-    public void cloneRepository(Student student) throws GitAPIException {
+    public boolean cloneRepository(Student student) throws GitAPIException {
         File directory = new File(path.concat(student.getNickname()));
         if (directory.exists()) {
             deleteDirectory(directory);
         }
         directory.mkdirs();
         System.out.println("Cloning " + student.getNickname() + "'s repository...");
+
         try {
             Git.cloneRepository()
                     .setURI(student.getRepositoryURL())
+                    .setCloneAllBranches(true)
                     .setDirectory(directory)
                     .setCredentialsProvider(new UsernamePasswordCredentialsProvider(username, password))
                     .call();
         } catch (TransportException e) {
             System.out.println("Can't access " + student.getNickname() + "'s repository");
-            return;
+            return false;
         }
         System.out.println(student.getNickname() + "'s repository cloned successfully");
+        return true;
     }
 
     public void cloneRepository(Collection<Student> students) throws GitAPIException {

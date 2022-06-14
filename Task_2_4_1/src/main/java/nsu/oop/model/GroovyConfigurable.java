@@ -12,7 +12,7 @@ import java.util.Collection;
 
 public class GroovyConfigurable extends GroovyObjectSupport {
 
-    public void postProcess() throws InstantiationException, IllegalAccessException, NoSuchFieldException,
+    private void postProcess() throws InstantiationException, IllegalAccessException, NoSuchFieldException,
             NoSuchMethodException, InvocationTargetException {
         for (MetaProperty metaProperty : getMetaClass().getProperties()) {
             Object value = getProperty(metaProperty.getName());

@@ -5,7 +5,7 @@ import nsu.oop.reports.Report;
 
 import java.util.concurrent.Callable;
 
-@CommandLine.Command(name = "report", mixinStandardHelpOptions = true)
+@CommandLine.Command(name = "DSLReport", mixinStandardHelpOptions = true)
 public class Commands implements Callable<Integer> {
 
     @CommandLine.Option(names = "report", arity = "1", description = "configures the system and prints a report")
