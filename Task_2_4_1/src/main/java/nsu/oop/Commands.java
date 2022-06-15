@@ -8,13 +8,13 @@ import java.util.concurrent.Callable;
 @CommandLine.Command(name = "DSLReport", mixinStandardHelpOptions = true)
 public class Commands implements Callable<Integer> {
 
-    @CommandLine.Option(names = "report", arity = "1", description = "configures the system and prints a report")
+    @CommandLine.Option(names = "report", arity = "0", description = "configures the system and prints a report")
     String repositoriesPath;
 
     @Override
     public Integer call() throws Exception {
         if (repositoriesPath != null) {
-            Report report = new Report(repositoriesPath);
+            Report report = new Report();
             report.printReport();
         }
         return null;

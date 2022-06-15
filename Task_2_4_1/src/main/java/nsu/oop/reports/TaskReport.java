@@ -5,7 +5,6 @@ import nsu.oop.handlers.RepositoryHandler;
 import nsu.oop.model.Mapping;
 import nsu.oop.model.Student;
 import nsu.oop.model.Task;
-import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 
 import java.io.File;
@@ -27,14 +26,13 @@ public class TaskReport {
 
         results = new ArrayList<>();
         for (Student student : students) {
-            RepositoryHandler repH= new RepositoryHandler(repositoriesPath);
+            RepositoryHandler repH = new RepositoryHandler(repositoriesPath);
             if (!new File(repositoriesPath.concat(student.getNickname())).exists()) {
                 if (!repH.cloneRepository(student) || !new File(repositoriesPath.concat(student.getNickname())).exists()) {
                     results.add(new StudentReport(student.getFullName(), false, false, 0));
                     continue;
                 }
-            }
-            else {
+            } else {
                 repH.initializeRepository(student);
             }
 
@@ -56,7 +54,7 @@ public class TaskReport {
             boolean buildRes = gradleHandler.buildTask(folder);
             boolean testRes = gradleHandler.testTask(folder);
             results.add(new StudentReport(student.getFullName(), buildRes, testRes,
-                    calculateScore(buildRes, testRes, task.getMaxScore())));
+                    calculateScore(buildRes, testRes, task.getMaxScore(), task.isHasTests())));
 
             if (branch != null) {
                 repH.checkoutToBranch(student.getNickname(), student.getMainBranch());
@@ -64,19 +62,21 @@ public class TaskReport {
         }
     }
 
-    private float calculateScore(boolean buildResult, boolean testResult, int maxScore) {
-        if (buildResult && testResult) {
-            return maxScore;
-        } else if (buildResult || testResult) {
-            return (float) maxScore/ 2;
-        } else {
-            return 0;
+    private float calculateScore(boolean buildResult, boolean testResult, int maxScore, boolean hasTests) {
+        if (buildResult) {
+            if (testResult || !hasTests) {
+                return maxScore;
+            } else {
+                return (float) maxScore / 2;
+            }
         }
+        return 0;
     }
 
     private String findTaskFolder(String repositoriesPath, Student student) {
-        if (new File(repositoriesPath.concat(student.getNickname()).concat("/Task_").concat(id)).exists()) {
-            return repositoriesPath.concat(student.getNickname()).concat("/Task_").concat(id);
+        String defaultName = repositoriesPath.concat(student.getNickname()).concat("/Task_").concat(id);
+        if (new File(defaultName).exists()) {
+            return defaultName;
         }
         if (student.getFolders() != null) {
             for (Mapping mapping : student.getFolders()) {

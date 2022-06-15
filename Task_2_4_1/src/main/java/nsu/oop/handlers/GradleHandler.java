@@ -26,7 +26,7 @@ public class GradleHandler {
         }
 
         System.out.println("Building " +
-                connection.getModel(GradleProject.class).getProjectIdentifier().getBuildIdentifier());
+                connection.getModel(GradleProject.class).getProjectIdentifier().getBuildIdentifier().getRootDir());
         BuildLauncher build = connection.newBuild();
         build.forTasks("assemble");
         try {

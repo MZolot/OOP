@@ -10,4 +10,5 @@ public class Task extends GroovyConfigurable {
     private String name;
     private int maxScore;
     private boolean given;
+    private boolean hasTests;
 }

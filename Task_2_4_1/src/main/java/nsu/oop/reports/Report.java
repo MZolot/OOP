@@ -15,8 +15,11 @@ public class Report {
     private final String repositories;
     private List<TaskReport> taskReports;
 
-    public Report(String repositoriesPath) {
-        repositories = repositoriesPath;
+    public Report() throws IOException, NoSuchFieldException, InvocationTargetException, InstantiationException,
+            IllegalAccessException, NoSuchMethodException {
+        Settings settings = new Settings();
+        settings.configure("Task_2_4_1/src/main/java/nsu/oop/configs/settings_config.groovy", false);
+        repositories = settings.getRepositoriesPath();
     }
 
     public void writeNewReport() throws IOException, NoSuchFieldException, InvocationTargetException,
